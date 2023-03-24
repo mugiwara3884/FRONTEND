@@ -27,16 +27,18 @@ const Login = () => {
 
   const onFormSubmit = (formData) => {
     setLoading(true);
-    console.log(formData.mobile);
-    // if (formData.mobile) {
-      // loginWithOTP({ mobile: formData.mobile },
-      //   apiSuccessRes => {
-      //     console.log("apiSuccessRes", apiSuccessRes);
-      //     const { data: { token,meta:{code,message} } } = apiSuccessRes;
-      //     console.log(token);
-      //     if(code==200){
-        let token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7InVzZXJJZCI6NSwidXNlck5hbWUiOiJHYXVyYXYiLCJ1c2VyRW1haWwiOiIiLCJ1c2VyTW9iaWxlTnVtYmVyIjoiOTkxMDIyNzIwNSIsInVzZXJSb2xlIjoiQWRtaW4iLCJ1c2VyU3RhdHVzIjoiQWN0aXZlIiwidXNlck9UUFZlcmlmaWVkIjp0cnVlfSwiaWF0IjoxNjc4OTU1NzgyfQ.HhgPCTkycuYZJyNGRNQsTvKQ4N9XbcgW9ft6wvCk9uc"
-            console.log(token);
+    console.log(formData);
+    if (formData) {
+      console.log("hererere");
+      loginWithOTP({ email:formData.email,password:formData.password},
+        apiSuccessRes => {
+          console.log("apiSuccessRes", apiSuccessRes);
+          // const { data: { meta:{code,message} } } = apiSuccessRes;
+          const  token = apiSuccessRes.data.token
+          const code = apiSuccessRes.data.code
+          console.log(token);
+          console.log(token);
+          if(code==200){
             setAuthToken(token)
             setTimeout(() => {
               window.history.pushState(
@@ -46,29 +48,29 @@ const Login = () => {
               );
               window.location.reload();
             }, 1000);
-          // }
-          // else{
-          //   setTimeout(() => {
-          //     setError(message);
-          //     setLoading(false);
-          //   }, 2000);
-          // }
+          }
+          else{
+            setTimeout(() => {
+              // setError(message);
+              setLoading(false);
+            }, 2000);
+          }
         
-        // },
-        // apiErrorRes => {
-        //   console.log("loginError", apiErrorRes);
-        //   setTimeout(() => {
-        //     setError("Cannot login with credentials");
-        //     setLoading(false);
-        //   }, 2000);
-        // })
+        },
+        apiErrorRes => {
+          console.log("loginError", apiErrorRes);
+          setTimeout(() => {
+            setError("Cannot login with credentials");
+            setLoading(false);
+          }, 2000);
+        })
 
-    // } else {
-    //   setTimeout(() => {
-    //     setError("Cannot login with credentials");
-    //     setLoading(false);
-    //   }, 2000);
-    // }
+    } else {
+      setTimeout(() => {
+        setError("Cannot login with credentials");
+        setLoading(false);
+      }, 2000);
+    }
   };
 
   const { errors, register, handleSubmit } = useForm();

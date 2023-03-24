@@ -1,6 +1,6 @@
 {
     "endPoints": {
-        "loginWIthOTP": "/user/loginWithOtp",
+        "loginWIthOTP": "login",
         "verifyOTP": "/user/verifyOtp",
         "addUser": "/user/addUser",
         "getUsers": "/user/getUsers",

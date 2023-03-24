@@ -6,6 +6,8 @@ import LogoDark2x from "../../src/assets/images/logo_dark.png";
 import favicon from "../../src/assets/images/favicon.png";
 
 export const AuthContextProvider = (props) => {
+  console.log(props);
+  console.log("here");
   console.log("App Env--->", process.env.REACT_APP_ENV);
   const [authToken, setAuthToken] = useState(false);
   const [userData, setUserData] = useState({});
@@ -14,9 +16,11 @@ export const AuthContextProvider = (props) => {
   let userDataFromToken = false;
   if (tokenFromSessionStorage) {
     userDataFromToken = parseJwt(tokenFromSessionStorage);
+    console.log(userDataFromToken);
     userDataFromToken = userDataFromToken.user;
   };
   useEffect(() => {
+    console.log(authToken);
     if (authToken) {
       localStorage.setItem("token", authToken);
     } else {
@@ -69,6 +73,7 @@ export const AuthContextProvider = (props) => {
   async function loginWithOTP(data, handleApiRes, handleApiError) {
     await AxiosPost("loginWIthOTP", data,
       (apiRes) => {
+        console.log("hee");
         handleApiRes(apiRes)
       }, (apiError) => {
         handleApiError(apiError)
