@@ -27,12 +27,9 @@ const Login = () => {
 
   const onFormSubmit = (formData) => {
     setLoading(true);
-    console.log(formData);
     if (formData) {
-      console.log("hererere");
       loginWithOTP({ email:formData.email,password:formData.password},
         apiSuccessRes => {
-          console.log("apiSuccessRes", apiSuccessRes);
           // const { data: { meta:{code,message} } } = apiSuccessRes;
           const  token = apiSuccessRes.data.token
           const code = apiSuccessRes.data.code

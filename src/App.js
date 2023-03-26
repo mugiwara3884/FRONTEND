@@ -28,6 +28,7 @@ import Customer from "./pages/ACME/CustomerEkycUpdate";
 import ThankyouPage from "./pages/ACME/ThankyouPage";
 
 const App = () => {
+  console.log("gfhggfhgfhtf");
   return (
     <Switch>
       {/* Auth Pages */}
@@ -48,19 +49,19 @@ const App = () => {
       ></Route>
       <Route
         exact
-        path={`${process.env.PUBLIC_URL}/auth-verify-otp`}
+        path={`${process.env.PUBLIC_URL}/kyc-list"`}
         render={(props) => (
           <AuthContextProvider>
-            <VerifyOTP />
+            <Register />
           </AuthContextProvider>
         )}
       ></Route>
       <Route
         exact
-        path={`${process.env.PUBLIC_URL}/auth-verify-otp`}
+        path={`${process.env.PUBLIC_URL}/kyc-list"`}
         render={(props) => (
           <AuthContextProvider>
-            <VerifyOTP />
+            <Register />
           </AuthContextProvider>
         )}
       ></Route>
