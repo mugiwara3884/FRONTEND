@@ -33,6 +33,12 @@ export const AuthContextProvider = (props) => {
           // text: "Dashboard",
           // link: "/",
         },
+        {
+          icon: "file-docs",
+          text: "KYC List",
+          active: true,
+          link: "/kyc-list",
+        },
         // {
         //   heading: "Pre-built Pages",
         // },
@@ -40,6 +46,7 @@ export const AuthContextProvider = (props) => {
           icon: "users",
           text: "User List",
           active: false,
+          link: "/user-list"
         },
         {
           icon: "file-docs",

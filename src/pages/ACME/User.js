@@ -3,6 +3,8 @@ import React, { useContext, useEffect, useState } from "react";
 import Content from "../../layout/content/Content";
 // import Head from "../../../layout/head/Head";
 import Head from "../../layout/head/Head";
+import moment from 'moment-timezone';
+
 import {
   DropdownMenu,
   DropdownToggle,
@@ -73,8 +75,9 @@ const UserListRegularPage = () => {
   const [totalUsers, setTotalUsers] = useState(1);
   const [sort, setSortState] = useState("");
   const [statusDropdown, setStatusDropDown] = useState([
-    { value: "Active", label: "Active" },
-    { value: "In-Active", label: "In-Active" }
+    { value: 'en', label: 'English' },
+  { value: 'es', label: 'Spanish' },
+  { value: 'fr', label: 'French' },
   ]);
   const [roleDropdown, setRolewDropDown] = useState([
     { value: "Agent", label: "Agent" },
@@ -82,6 +85,13 @@ const UserListRegularPage = () => {
   ]);
 
   // Sorting userData
+
+
+  const timezones = moment.tz.names().map((zone) => ({
+    value: zone,
+    label: `(UTC${moment.tz(zone).format('Z')}) ${zone}`,
+  }));
+
   const sortFunc = (params) => {
     let defaultData = userData;
     if (params === "asc") {
@@ -124,6 +134,12 @@ const UserListRegularPage = () => {
       })
   };
   // Changing state value when searching name
+
+  const [timezone, setTimezone] = useState('');
+  const timezoneOptions = Intl.DateTimeFormat().resolvedOptions().timeZone
+    .split('/')
+    .map((zone) => ({ value: zone, label: zone }));
+console.log(timezoneOptions);
   useEffect(() => {
     if (onSearchText !== "") {
       const filteredObject = userData.filter((item) => {
@@ -208,32 +224,32 @@ const UserListRegularPage = () => {
     //       console.log(" add user apiErr ", apiErr)
     //     });
     // } else {
-      let submittedData = {
-        name: formData.name,
-        mobileNumber: formData.phone,
-        email: formData.email,
-        role: formData.role,
-        status: formData.status,
-      };
-      // setUserData([submittedData, ...userData]);
+    let submittedData = {
+      name: formData.name,
+      mobileNumber: formData.phone,
+      email: formData.email,
+      role: formData.role,
+      status: formData.status,
+    };
+    // setUserData([submittedData, ...userData]);
 
-      addUser(submittedData,
-        (apiRes) => {
-          const { data: { data: { data, total }, meta: { code, message }, token } } = apiRes;
-          console.log(" add user apiRes data", data);
-          console.log(" add user apiRes message", message);
-          console.log(" add user apiRes token", token);
-          if (code == 200) {
-            resetForm();
-            setModal({ edit: false }, { add: false });
-            getUsers();
+    addUser(submittedData,
+      (apiRes) => {
+        const { data: { data: { data, total }, meta: { code, message }, token } } = apiRes;
+        console.log(" add user apiRes data", data);
+        console.log(" add user apiRes message", message);
+        console.log(" add user apiRes token", token);
+        if (code == 200) {
+          resetForm();
+          setModal({ edit: false }, { add: false });
+          getUsers();
 
-          }
-          setAuthToken(token);
-        },
-        (apiErr) => {
-          console.log(" add user apiErr ", apiErr)
-        });
+        }
+        setAuthToken(token);
+      },
+      (apiErr) => {
+        console.log(" add user apiErr ", apiErr)
+      });
     // }
 
   };
@@ -742,7 +758,7 @@ const UserListRegularPage = () => {
                 <Form className="row gy-4" noValidate onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">User Name</label>
+                      <label className="form-label">Display  Name</label>
                       <input
                         className="form-control"
                         type="text"
@@ -788,89 +804,61 @@ const UserListRegularPage = () => {
                       {errors.email && <span className="invalid">{errors.email.message}</span>}
                     </FormGroup>
                   </Col>
-                  <Col md="6">
+
+                  <Col md="11">
                     <FormGroup>
-                      <label className="form-label">Role</label>
-                      <div className="form-control-wrap">
-                        <RSelect
-                          options={roleDropdown}
-                          defaultValue={{ value: formData.role, label: formData.role }}
-                          onChange={(e) => setFormData({ ...formData, role: e.value })}
-                        />
-                      </div>
-                    </FormGroup>
-                  </Col>
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Status</label>
-                      <div className="form-control-wrap">
-                        <RSelect
-                          options={statusDropdown}
-                          defaultValue={{ value: formData.status, label: formData.status }}
-                          onChange={(e) => setFormData({ ...formData, status: e.value })}
-                        />
-                      </div>
-                    </FormGroup>
-                  </Col>
-                  {/* <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Email </label>
+                      <label className="form-label">Add to Groups</label>
                       <input
                         className="form-control"
                         type="text"
                         name="email"
                         defaultValue={formData.email}
-                        placeholder="Enter email"
-                        ref={register({
-                          required: "This field is required",
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "invalid email address",
-                          },
-                        })}
+                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                        // ref={register({ required: "This field is required" })}
+                        placeholder="Enter Email"
                       />
                       {errors.email && <span className="invalid">{errors.email.message}</span>}
                     </FormGroup>
-                  </Col> */}
-                  {/* <Col md="6">
+                  </Col>
+
+                  <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Balance</label>
-                      <input
-                        className="form-control"
-                        type="number"
-                        name="balance"
-                        defaultValue={formData.balance}
-                        placeholder="Balance"
-                        ref={register({ required: "This field is required" })}
-                      />
-                      {errors.balance && <span className="invalid">{errors.balance.message}</span>}
-                    </FormGroup>
-                  </Col> */}
-                  {/* <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Phone</label>
-                      <input
-                        className="form-control"
-                        type="number"
-                        name="phone"
-                        defaultValue={formData.phone}
-                        ref={register({ required: "This field is required" })}
-                      />
-                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
-                    </FormGroup>
-                  </Col> */}
-                  {/* <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Status</label>
+                      <label className="form-label">Language</label>
                       <div className="form-control-wrap">
                         <RSelect
-                          options={filterStatus}
-                          defaultValue={{ value: "Active", label: "Active" }}
+                          options={statusDropdown}
+                          defaultValue="Please Select Language"
                           onChange={(e) => setFormData({ ...formData, status: e.value })}
                         />
                       </div>
                     </FormGroup>
-                  </Col> */}
+                  </Col>
+                  <Col md="6" >
+
+                  <FormGroup>
+                      <label className="form-label">Time Zones</label>
+                      <div className="form-control-wrap">
+                        <RSelect
+                          options={timezoneOptions}
+                          defaultValue="Please Select zone"
+                          onChange={(e) => setTimezone(e.target.value)}
+                          // onChange={(e) => setFormData({ ...formData, status: e.value })}
+                        />
+                      </div>
+                    </FormGroup>
+                    {/* <RSelect value={timezone} onChange={(e) => setTimezone(e.target.value)}>
+                      <option value="">Select timezone</option>
+                      {timezoneOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </RSelect> */}
+                  </Col>
+
+
+
+                
                   <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>

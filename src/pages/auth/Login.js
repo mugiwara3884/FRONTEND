@@ -40,9 +40,9 @@ const Login = () => {
             setAuthToken(token)
             setTimeout(() => {
               window.history.pushState(
-                `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/kyc-list"}`,
+                `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`,
                 "auth-login",
-                `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/kyc-list"}`
+                `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`
               );
               window.location.reload();
             }, 1000);
