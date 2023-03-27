@@ -33,56 +33,62 @@ export const AuthContextProvider = (props) => {
           // text: "Dashboard",
           // link: "/",
         },
-        {
-          icon: "file-docs",
-          text: "KYC List",
-          active: true,
-          link: "/kyc-list",
-        },
+        // {
+        //   icon: "file-docs",
+        //   text: "KYC List",
+        //   active: true,
+        //   link: "/kyc-list",
+        // },
         // {
         //   heading: "Pre-built Pages",
         // },
-        {
-          icon: "users",
-          text: "Users",
-          active: false,
-          link: "/user-list"
-        },
-        {
-          icon: "users",
-          text: "Groups",
-          active: false,
-          link: "/user-list"
-        },
+        
         {
           icon: "users",
           text: "Policies",
           active: false,
-          link: "/user-list"
+          // link: "/user-list",
+          subMenu: [
+            {
+              icon: "users",
+              text: "Groups",
+              active: false,
+              // link: "/user-list"
+            },
+            {
+              icon: "users",
+              text: "Users",
+              active: false,
+              link: "/user-list"
+            },
+          ],
         },
         
         {
           icon: "users",
           text: "Cabinet",
           active: false,
-          link: "/user-list"
+          link: "/user-list",
+          subMenu:[
+            {
+              icon: "users",
+              text: "Workspace",
+              active: false,
+              link: "/user-list"
+            },
+          ]
         },
-        {
-          icon: "users",
-          text: "Workspace",
-          active: false,
-          link: "/user-list"
-        },
-        {
-          icon: "file-docs",
-          text: "Upload Documents",
-          active: false,
-        },
-        {
-            icon: "file-docs",
-            text: "My Workspace",
-            active: false,
-          }
+        
+        // {
+        //   icon: "file-docs",
+        //   text: "Upload Documents",
+        //   active: false,
+        // },
+        // {
+        //     icon: "file-docs",
+        //     text: "My Workspace",
+        //     active: false,
+        //   }
         ])
       }
       else {

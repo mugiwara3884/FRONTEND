@@ -758,7 +758,7 @@ console.log(timezoneOptions);
                 <Form className="row gy-4" noValidate onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Display  Name</label>
+                      <label className="form-label">Display Name</label>
                       <input
                         className="form-control"
                         type="text"
@@ -773,7 +773,7 @@ console.log(timezoneOptions);
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Mobile Number</label>
+                      <label className="form-label">Employee Code</label>
                       <input
                         className="form-control"
                         type="number"
@@ -783,13 +783,13 @@ console.log(timezoneOptions);
                         minLength={10}
                         maxLength={10}
                         onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                        placeholder="Enter Mobile Number"
+                        placeholder="Enter Employee Code"
                         required
                       />
                       {errors.phone && <span className="invalid">{errors.phone.message}</span>}
                     </FormGroup>
                   </Col>
-                  <Col md="6">
+                  <Col md="12">
                     <FormGroup>
                       <label className="form-label">Email</label>
                       <input
@@ -805,7 +805,7 @@ console.log(timezoneOptions);
                     </FormGroup>
                   </Col>
 
-                  <Col md="11">
+                  <Col md="12">
                     <FormGroup>
                       <label className="form-label">Add to Groups</label>
                       <input
@@ -815,13 +815,13 @@ console.log(timezoneOptions);
                         defaultValue={formData.email}
                         onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
                         // ref={register({ required: "This field is required" })}
-                        placeholder="Enter Email"
+                        placeholder="Enter Values"
                       />
                       {errors.email && <span className="invalid">{errors.email.message}</span>}
                     </FormGroup>
                   </Col>
 
-                  <Col md="6">
+                  {/* <Col md="6">
                     <FormGroup>
                       <label className="form-label">Language</label>
                       <div className="form-control-wrap">
@@ -845,7 +845,7 @@ console.log(timezoneOptions);
                           // onChange={(e) => setFormData({ ...formData, status: e.value })}
                         />
                       </div>
-                    </FormGroup>
+                    </FormGroup> */}
                     {/* <RSelect value={timezone} onChange={(e) => setTimezone(e.target.value)}>
                       <option value="">Select timezone</option>
                       {timezoneOptions.map((option) => (
@@ -854,7 +854,7 @@ console.log(timezoneOptions);
                         </option>
                       ))}
                     </RSelect> */}
-                  </Col>
+                  {/* </Col> */}
 
 
 

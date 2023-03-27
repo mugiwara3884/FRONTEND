@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import Logo from "../../images/logo.png";
 import LogoDark from "../../images/logo-dark.png";
 import PageContainer from "../../layout/page-container/PageContainer";
+import acmeLogo from "../../images/acmeLogo.jpeg";
 import Head from "../../layout/head/Head";
 import AuthFooter from "./AuthFooter";
 import {
@@ -79,7 +80,10 @@ const Login = () => {
         <Block className="nk-block-middle nk-auth-body  wide-xs">
           <div className="brand-logo pb-4 text-center">
             <Link to={process.env.PUBLIC_URL + "/"} className="logo-link">
-             
+            {/* <img className="logo-light logo-img logo-img-lg" src={acmeLogo} alt="logo" />
+              <img className="logo-dark logo-img logo-img-lg" src={acmeLogo} alt="logo-dark" /> */}
+              <img className="logo-dark w-40" src={acmeLogo} alt="logo-dark" />
+              {/* <img className="logo-light w-80 h-80" src={acmeLogo} alt="logo" /> */}
             </Link>
           </div>
 
