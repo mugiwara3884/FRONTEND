@@ -6,7 +6,6 @@ import LogoDark2x from "../../src/assets/images/logo_dark.png";
 import favicon from "../../src/assets/images/favicon.png";
 
 export const AuthContextProvider = (props) => {
-  console.log(props);
   console.log("here");
   console.log("App Env--->", process.env.REACT_APP_ENV);
   const [authToken, setAuthToken] = useState(false);
@@ -16,11 +15,11 @@ export const AuthContextProvider = (props) => {
   let userDataFromToken = false;
   if (tokenFromSessionStorage) {
     userDataFromToken = parseJwt(tokenFromSessionStorage);
+    console.log(tokenFromSessionStorage);
     console.log(userDataFromToken);
     userDataFromToken = userDataFromToken.user;
   };
   useEffect(() => {
-    console.log(authToken);
     if (authToken) {
       localStorage.setItem("token", authToken);
     } else {
@@ -29,7 +28,8 @@ export const AuthContextProvider = (props) => {
     setUserData(userDataFromToken.user ? userDataFromToken.user : false);
     if (userDataFromToken) {
       const { userRole } = userDataFromToken;
-      if (userRole == 'Admin') {
+      console.log(userDataFromToken);
+      if (userDataFromToken) {
         setAuthMenu([
           {
           // icon: "dashlite",
@@ -52,6 +52,7 @@ export const AuthContextProvider = (props) => {
         }])
       }
       else {
+        console.log("here");
         setAuthMenu([{
           icon: "dashlite",
           iconUrl: favicon,
@@ -73,23 +74,14 @@ export const AuthContextProvider = (props) => {
   async function loginWithOTP(data, handleApiRes, handleApiError) {
     await AxiosPost("loginWIthOTP", data,
       (apiRes) => {
-        console.log("hee");
+        console.log("apiRes",apiRes.data.token);
         handleApiRes(apiRes)
+        setAuthToken(apiRes.data.token)
       }, (apiError) => {
         handleApiError(apiError)
       })
   };
-  async function verifyOTP(data, handleApiRes, handleApiError) {
-    console.log(data);
-    await AxiosPost("verifyOTP", data,
-      (apiRes) => {
-        console.log(apiRes);
-        handleApiRes(apiRes)
-      }, (apiError) => {
-        console.log(apiError);
-        handleApiError(apiError)
-      })
-  };
+  
   const logOut = () => {
     localStorage.removeItem("token");
   }
@@ -98,7 +90,6 @@ export const AuthContextProvider = (props) => {
       var base64Payload = token.split('.')[1];
       var payload = Buffer.from(base64Payload, 'base64');
       let finalUserPayload = JSON.parse(payload.toString());
-      console.log("finalUserPayload ", finalUserPayload);
       return finalUserPayload;
     } else {
       return false;
@@ -112,7 +103,6 @@ export const AuthContextProvider = (props) => {
     authToken: authToken,
     menuData: authMenu,
     loginWithOTP: loginWithOTP,
-    verifyOTP: verifyOTP,
     logOut: logOut
   }}>{props.children}</AuthContext.Provider>;
 };

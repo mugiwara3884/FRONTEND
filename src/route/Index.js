@@ -106,6 +106,7 @@ import KnobPreview from "../pages/components/charts/KnobPreview";
 import { FileManagerContextProvider } from "../pages/app/file-manager/FileManagerContext";
 
 const Pages = () => {
+  console.log("in new index");
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   });

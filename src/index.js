@@ -5,9 +5,9 @@ import "./assets/scss/style-email.scss";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-
+console.log("dfdfdss");
 const Error404Modern = lazy(() => import("./pages/error/404-modern"));
-
+console.log(location.state );
 ReactDOM.render(
   <React.Fragment>
     <Suspense fallback={<div />}>

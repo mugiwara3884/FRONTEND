@@ -3,6 +3,7 @@ import { Route, Redirect } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 const auth = localStorage.getItem("token");
 const PrivateRoute = ({ exact, component: Component, ...rest }) => {
+  console.log("here6private");
   const { userAuthContextData } = useContext(AuthContext);
   const [authUserData] = userAuthContextData;
   const { userOTPVerified } = authUserData
