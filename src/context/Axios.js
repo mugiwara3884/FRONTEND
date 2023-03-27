@@ -4,8 +4,8 @@ import { AuthContext } from "../context/AuthContext";
 import React, { useState, useContext } from "react";
 
 
-// const url = "http://localhost:4001/api"; //! local
-const url = "http://10.10.0.105:3000/"; //! live
+const url = "http://localhost:4001/api"; //! local
+// const url = "http://10.10.0.105:3000/"; //! live
 
 
 
