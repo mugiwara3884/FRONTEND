@@ -44,7 +44,32 @@ export const AuthContextProvider = (props) => {
         // },
         {
           icon: "users",
-          text: "User List",
+          text: "Users",
+          active: false,
+          link: "/user-list"
+        },
+        {
+          icon: "users",
+          text: "Groups",
+          active: false,
+          link: "/user-list"
+        },
+        {
+          icon: "users",
+          text: "Policies",
+          active: false,
+          link: "/user-list"
+        },
+        
+        {
+          icon: "users",
+          text: "Cabinet",
+          active: false,
+          link: "/user-list"
+        },
+        {
+          icon: "users",
+          text: "Workspace",
           active: false,
           link: "/user-list"
         },
@@ -52,7 +77,13 @@ export const AuthContextProvider = (props) => {
           icon: "file-docs",
           text: "Upload Documents",
           active: false,
-        }])
+        },
+        {
+            icon: "file-docs",
+            text: "My Workspace",
+            active: false,
+          }
+        ])
       }
       else {
         setAuthMenu([{
