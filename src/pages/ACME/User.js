@@ -63,11 +63,14 @@ const UserListRegularPage = () => {
   });
   const [editId, setEditedId] = useState();
   const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
+    display_name: "",
+    emp_code: "",
     email: "",
-    role: "Agent",
-    status: "Active",
+    // role: "Agent",
+    // status: "Active",
+    add_group: "",
+    user_role: "",
+    max_quota: ""
   });
   const [actionText, setActionText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -76,8 +79,8 @@ const UserListRegularPage = () => {
   const [sort, setSortState] = useState("");
   const [statusDropdown, setStatusDropDown] = useState([
     { value: 'en', label: 'English' },
-  { value: 'es', label: 'Spanish' },
-  { value: 'fr', label: 'French' },
+    { value: 'es', label: 'Spanish' },
+    { value: 'fr', label: 'French' },
   ]);
   const [roleDropdown, setRolewDropDown] = useState([
     { value: "Agent", label: "Agent" },
@@ -119,15 +122,20 @@ const UserListRegularPage = () => {
     getUser({ pageNumber: currentPage, pageSize: itemPerPage, search: onSearchText },
       (apiRes) => {
         console.log(" get user apiRes apiRes", apiRes);
-        const { data: { data: { data, total }, meta: { code, message }, token } } = apiRes;
+        // const { data: { data :{data}},status, token }  = apiRes;
+        const data = apiRes.data.data
+        const code = apiRes.status
+        const message = apiRes.data.message
         console.log(" get user apiRes data", data);
         console.log(" get user apiRes message", message);
-        console.log(" get user apiRes token", token);
+        // console.log(" get user apiRes token", token);
+        console.log(" get user apiRes code", code);
+
         if (code == 200) {
           setUserData(data);
-          setTotalUsers(total)
+          // setTotalUsers(total)
         }
-        setAuthToken(token);
+        // setAuthToken(token);
       },
       (apiErr) => {
         console.log(" get user apiErr ", apiErr)
@@ -139,7 +147,7 @@ const UserListRegularPage = () => {
   const timezoneOptions = Intl.DateTimeFormat().resolvedOptions().timeZone
     .split('/')
     .map((zone) => ({ value: zone, label: zone }));
-console.log(timezoneOptions);
+  // console.log(timezoneOptions);
   useEffect(() => {
     if (onSearchText !== "") {
       const filteredObject = userData.filter((item) => {
@@ -175,11 +183,15 @@ console.log(timezoneOptions);
   // function to reset the form
   const resetForm = () => {
     setFormData({
-      name: "",
-      phone: "",
+      display_name: "",
+      emp_code: "",
       email: "",
-      role: "Agent",
-      status: "Active",
+      // role: "Agent",
+      // status: "Active",
+      add_group: "",
+      user_role: "",
+      max_quota: ""
+
     });
     setEditedId(0)
   };
@@ -195,51 +207,63 @@ console.log(timezoneOptions);
     // console.log("user submitData ", submitData)
     console.log("user formData ", formData)
     // const { name, email, phone } = submitData;
-    // if (editId) {
-    //   let submittedData = {
-    //     user_id: editId,
-    //     name: formData.name,
-    //     mobileNumber: formData.phone,
-    //     email: formData.email,
-    //     role: formData.role,
-    //     status: formData.status,
-    //   };
-    //   // setUserData([submittedData, ...userData]);
+    if (editId) {
+      let submittedData = {
+        id:editId,
+        display_name: formData.display_name,
+        emp_code: formData.emp_code,
+        email: formData.email,
+        // role: formData.role,
+        // status: formData.status,
+        add_group: formData.add_group,
+        user_role: formData.user_role,
+        max_quota: formData.max_quota
+      };
+      // setUserData([submittedData, ...userData]);
 
-    //   updateUserData(submittedData,
-    //     (apiRes) => {
-    //       const { data: { data: { data, total }, meta: { code, message }, token } } = apiRes;
-    //       console.log(" add user apiRes data", data);
-    //       console.log(" add user apiRes message", message);
-    //       console.log(" add user apiRes token", token);
-    //       if (code == 200) {
-    //         resetForm();
-    //         setModal({ edit: false }, { add: false });
-    //         getUsers();
-
-    //       }
-    //       setAuthToken(token);
-    //     },
-    //     (apiErr) => {
-    //       console.log(" add user apiErr ", apiErr)
-    //     });
-    // } else {
-    let submittedData = {
-      name: formData.name,
-      mobileNumber: formData.phone,
-      email: formData.email,
-      role: formData.role,
-      status: formData.status,
-    };
-    // setUserData([submittedData, ...userData]);
-
+      addUser(submittedData,
+        (apiRes) => {
+          console.log(apiRes);
+          const code = 200
+          // const { data: { data: { data, total }, meta: { code, message }, token } } = apiRes;
+          // console.log(" add user apiRes data", data);
+          // console.log(" add user apiRes message", message);
+          // console.log(" add user apiRes token", token);
+          if (code == 200) {
+            console.log("260");
+            resetForm();
+            setModal({ edit: false }, { add: false });
+            getUsers();
+  
+          }
+          setAuthToken(token);
+        },
+        (apiErr) => {
+          console.log(" add user apiErr ", apiErr)
+        });
+    } else {
+      let submittedData = {
+        display_name: formData.display_name,
+        emp_code: formData.emp_code,
+        email: formData.email,
+        // role: formData.role,
+        // status: formData.status,
+        add_group: formData.add_group,
+        user_role: formData.user_role,
+        max_quota: formData.max_quota
+      };
+      // setUserData([submittedData, ...userData]);
+    }
     addUser(submittedData,
       (apiRes) => {
-        const { data: { data: { data, total }, meta: { code, message }, token } } = apiRes;
-        console.log(" add user apiRes data", data);
-        console.log(" add user apiRes message", message);
-        console.log(" add user apiRes token", token);
+        console.log(apiRes);
+        const code = 200
+        // const { data: { data: { data, total }, meta: { code, message }, token } } = apiRes;
+        // console.log(" add user apiRes data", data);
+        // console.log(" add user apiRes message", message);
+        // console.log(" add user apiRes token", token);
         if (code == 200) {
+          console.log("260");
           resetForm();
           setModal({ edit: false }, { add: false });
           getUsers();
@@ -255,53 +279,72 @@ console.log(timezoneOptions);
   };
 
   // submit function to update a new item
-  const onEditSubmit = (submitData) => {
-    const { name, email, phone } = submitData;
-    let submittedData;
-    let newitems = userData;
-    newitems.forEach((item) => {
-      if (item.id === editId) {
-        submittedData = {
-          id: item.id,
-          avatarBg: item.avatarBg,
-          name: name,
-          image: item.image,
-          role: item.role,
-          email: email,
-          balance: formData.balance,
-          phone: "+" + phone,
-          emailStatus: item.emailStatus,
-          kycStatus: item.kycStatus,
-          lastLogin: item.lastLogin,
-          status: formData.status,
-          country: item.country,
-        };
-      }
-    });
-    let index = newitems.findIndex((item) => item.id === editId);
-    newitems[index] = submittedData;
-    setModal({ edit: false });
-    resetForm();
-  };
+  // const onEditSubmit = (submitData) => {
+  //   debugger
+  //   console.log(submitData);
+  //   const { display_name, email, emp_code, add_group, user_role } = submitData;
+  //   let submittedData;
+  //   let newitems = userData;
+  //   newitems.forEach((item) => {
+  //     if (item.id === editId) {
+  //       console.log("2799999", editId);
+  //       submittedData = {
+  //         id: item.id,
+  //         avatarBg: item.avatarBg,
+  //         display_name: display_name,
+  //         user_role: user_role,
+  //         max_quota: max_quota,
+  //         add_group: add_group,
+  //         image: item.image,
+  //         role: item.role,
+  //         email: email,
+  //         balance: formData.balance,
+  //         emp_code: emp_code,
+  //         emailStatus: item.emailStatus,
+  //         kycStatus: item.kycStatus,
+  //         lastLogin: item.lastLogin,
+  //         status: formData.status,
+  //         country: item.country,
+  //       };
+  //     }
+  //   });
+  //   let index = newitems.findIndex((item) => item.id === editId);
+
+  //   newitems[index] = submittedData;
+  //   console.log(submittedData);
+  //   setModal({ edit: false });
+  //   resetForm();
+  // };
 
   // function that loads the want to editted userData
   const onEditClick = (id) => {
+    debugger
     console.log("id........", id)
     console.log("userData........", userData)
     userData.map((item) => {
-      if (item.user_id === id) {
+      if (item.id == id) {
+        console.log(item,"sds");
         setFormData({
-          name: item.user_name,
-          phone: item.user_mobile,
-          email: item.user_email,
-          role: item.user_role,
-          status: item.status
+          id: id,
+          display_name: item.display_name,
+          user_role: item.user_role,
+          max_quota: item.max_quota,
+          add_group: item.add_group,
+          emp_code: item.emp_code,
+          email: item.email,
+          // role: item.user_role,
+          // status: item.status
         });
+
+       
         setModal({ edit: false, add: true });
         setEditedId(id);
       }
+
     });
   };
+
+  console.log(formData,"dddsdsdsd");
 
   // function to change to suspend property for an item
   const suspendUser = (id) => {
@@ -497,16 +540,19 @@ console.log(timezoneOptions);
             <DataTableBody>
               <DataTableHead>
                 <DataTableRow>
-                  <span className="sub-text">User</span>
+                  <span className="sub-text">Display Name</span>
                 </DataTableRow>
                 <DataTableRow size="md">
-                  <span className="sub-text">Phone</span>
+                  <span className="sub-text">Email</span>
+                </DataTableRow>
+                <DataTableRow size="md">
+                  <span className="sub-text">Employee Code</span>
                 </DataTableRow>
                 <DataTableRow size="lg">
-                  <span className="sub-text">Verified</span>
+                  <span className="sub-text">Max Quota</span>
                 </DataTableRow>
                 <DataTableRow size="lg">
-                  <span className="sub-text">Last Login</span>
+                  <span className="sub-text"> User Role</span>
                 </DataTableRow>
                 <DataTableRow size="md">
                   <span className="sub-text">Status</span>
@@ -566,28 +612,16 @@ console.log(timezoneOptions);
                 ? currentItems.map((item) => {
                   return (
                     <DataTableItem key={item.user_id}>
-                      {/* <DataTableRow className="nk-tb-col-check">
-                          <div className="custom-control custom-control-sm custom-checkbox notext">
-                            <input
-                              type="checkbox"
-                              className="custom-control-input form-control"
-                              defaultChecked={item.checked}
-                              id={item.user_id + "uid1"}
-                              key={Math.random()}
-                              onChange={(e) => onSelectChange(e, item.id)}
-                            />
-                            <label className="custom-control-label" htmlFor={item.id + "uid1"}></label>
-                          </div>
-                        </DataTableRow> */}
-                      <DataTableRow>
-                        {/* <Link to={`${process.env.PUBLIC_URL}/user-details-regular/${item.user_id}`}> */}
-                        <div className="user-card">
-                          <UserAvatar
+
+                      {/* <DataTableRow> */}
+                      {/* <Link to={`${process.env.PUBLIC_URL}/user-details-regular/${item.user_id}`}> */}
+                      {/* <div className="user-card"> */}
+                      {/* <UserAvatar
                             theme={item.avatarBg}
-                            text={findUpper(item.user_name)}
+                            // text={findUpper(item.user_name)}
                             image={item.image}
-                          ></UserAvatar>
-                          <div className="user-info">
+                          ></UserAvatar> */}
+                      {/* <div className="user-info">
                             <span className="tb-lead">
                               {item.user_name}{" "}
                               <span
@@ -598,18 +632,19 @@ console.log(timezoneOptions);
                               ></span>
                             </span>
                             <span>{item.user_email}</span>
-                          </div>
-                        </div>
-                        {/* </Link> */}
-                      </DataTableRow>
+                          </div> */}
+                      {/* </div> */}
+                      {/* </Link> */}
+                      {/* </DataTableRow> */}
                       {/* <DataTableRow size="mb">
                           <span className="tb-amount">
                             {item.balance} <span className="currency">USD</span>
                           </span>
                         </DataTableRow> */}
                       <DataTableRow size="md">
-                        <span>{item.user_mobile}</span>
+                        <span>{item.display_name}</span>
                       </DataTableRow>
+
                       <DataTableRow size="lg">
                         <ul className="list-status">
                           <li>
@@ -617,20 +652,29 @@ console.log(timezoneOptions);
                               className={`text-success}`}
                               name={`${"check-circle"}`}
                             ></Icon>{" "}
-                            <span>Email</span>
+                            <span
+                              className={`tb-status text-${item.user_status === "Active" ? "success" : "danger"
+                                }`}
+                            >
+                              {item.email}
+                            </span>
                           </li>
-                          <li>
-                            <Icon
-                              className={`text-success}`}
-                              name={`${"check-circle"}`}
-                            ></Icon>{" "}
-                            <span>Mobile</span>
-                          </li>
+
                         </ul>
                       </DataTableRow>
-                      <DataTableRow size="lg">
-                        <span>{new Date(item.updated_at).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })}</span>
+                      <DataTableRow size="md">
+                        <span>{item.emp_code}</span>
                       </DataTableRow>
+                      <DataTableRow size="md">
+                        <span>{item.max_quota}</span>
+                      </DataTableRow>
+                      <DataTableRow size="md">
+                        <span>{item.user_role}</span>
+                      </DataTableRow>
+
+                      {/* <DataTableRow size="lg">
+                        <span>{new Date(item.updated_at).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })}</span>
+                      </DataTableRow> */}
                       <DataTableRow size="md">
                         <span
                           className={`tb-status text-${item.user_status === "Active" ? "success" : "danger"
@@ -641,11 +685,11 @@ console.log(timezoneOptions);
                       </DataTableRow>
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
-                          <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.user_id)}>
+                          <li className="nk-tb-action-hidden" onClick={() => onEditClick(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
-                              id={"edit" + item.user_id}
+                              id={"edit" + item.id}
                               icon="edit-alt-fill"
                               direction="top"
                               text="Edit"
@@ -738,7 +782,7 @@ console.log(timezoneOptions);
             </div>
           </DataTable>
         </Block>
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: false })} className="modal-dialog-centered" size="lg">
+        <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
           <ModalBody>
             <a
               href="#close"
@@ -762,13 +806,43 @@ console.log(timezoneOptions);
                       <input
                         className="form-control"
                         type="text"
-                        name="name"
-                        defaultValue={formData.name}
+                        name="display_name"
+                        defaultValue={formData.display_name}
                         onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                        placeholder="Enter name"
+                        placeholder="Enter display_name"
                         ref={register({ required: "This field is required" })}
                       />
-                      {errors.name && <span className="invalid">{errors.name.message}</span>}
+                      {errors.display_name && <span className="invalid">{errors.display_name.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Max Quota</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="max_quota"
+                        defaultValue={formData.max_quota}
+                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                        placeholder="Enter Quota"
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.max_quota && <span className="invalid">{errors.max_quota.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">User Role</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="user_role"
+                        defaultValue={formData.user_role}
+                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                        placeholder="Enter user_role"
+                        ref={register({ required: "This field is required" })}
+                      />
+                      {errors.user_role && <span className="invalid">{errors.user_role.message}</span>}
                     </FormGroup>
                   </Col>
                   <Col md="6">
@@ -776,9 +850,8 @@ console.log(timezoneOptions);
                       <label className="form-label">Employee Code</label>
                       <input
                         className="form-control"
-                        type="number"
-                        name="phone"
-                        defaultValue={formData.phone}
+                        name="emp_code"
+                        defaultValue={formData.emp_code}
                         ref={register({ required: "This field is required" })}
                         minLength={10}
                         maxLength={10}
@@ -786,7 +859,7 @@ console.log(timezoneOptions);
                         placeholder="Enter Employee Code"
                         required
                       />
-                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
+                      {errors.emp_code && <span className="invalid">{errors.emp_code.message}</span>}
                     </FormGroup>
                   </Col>
                   <Col md="12">
@@ -811,13 +884,13 @@ console.log(timezoneOptions);
                       <input
                         className="form-control"
                         type="text"
-                        name="email"
-                        defaultValue={formData.email}
+                        name="add_group"
+                        defaultValue={formData.add_group}
                         onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
                         // ref={register({ required: "This field is required" })}
                         placeholder="Enter Values"
                       />
-                      {errors.email && <span className="invalid">{errors.email.message}</span>}
+                      {errors.add_group && <span className="invalid">{errors.add_group.message}</span>}
                     </FormGroup>
                   </Col>
 
@@ -846,7 +919,7 @@ console.log(timezoneOptions);
                         />
                       </div>
                     </FormGroup> */}
-                    {/* <RSelect value={timezone} onChange={(e) => setTimezone(e.target.value)}>
+                  {/* <RSelect value={timezone} onChange={(e) => setTimezone(e.target.value)}>
                       <option value="">Select timezone</option>
                       {timezoneOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -858,11 +931,12 @@ console.log(timezoneOptions);
 
 
 
-                
-                  <Col size="12">
+
+                  <Col size="12" >
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
-                        <Button color="primary" size="md" type="submit">
+                        <Button color="primary" size="md" type="submit"
+                        >
                           {editId ? "Update User" : "Add User"}
 
                         </Button>
@@ -902,7 +976,7 @@ console.log(timezoneOptions);
             <div className="p-2">
               <h5 className="title">Update User</h5>
               <div className="mt-4">
-                <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
+                {/* <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Name</label>
@@ -937,34 +1011,7 @@ console.log(timezoneOptions);
                       {errors.email && <span className="invalid">{errors.email.message}</span>}
                     </FormGroup>
                   </Col>
-                  {/* <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Balance</label>
-                      <input
-                        className="form-control"
-                        type="number"
-                        name="balance"
-                        disabled
-                        defaultValue={parseFloat(formData.balance.replace(/,/g, ""))}
-                        placeholder="Balance"
-                        ref={register({ required: "This field is required" })}
-                      />
-                      {errors.balance && <span className="invalid">{errors.balance.message}</span>}
-                    </FormGroup>
-                  </Col> */}
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Phone</label>
-                      <input
-                        className="form-control"
-                        type="number"
-                        name="phone"
-                        defaultValue={Number(formData.phone)}
-                        ref={register({ required: "This field is required" })}
-                      />
-                      {errors.phone && <span className="invalid">{errors.phone.message}</span>}
-                    </FormGroup>
-                  </Col>
+
                   <Col md="12">
                     <FormGroup>
                       <label className="form-label">Status</label>
@@ -984,7 +1031,7 @@ console.log(timezoneOptions);
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
                         <Button color="primary" size="md" type="submit">
-                          Update User
+                          Update Usersss
                         </Button>
                       </li>
                       <li>
@@ -1001,7 +1048,7 @@ console.log(timezoneOptions);
                       </li>
                     </ul>
                   </Col>
-                </Form>
+                </Form> */}
               </div>
             </div>
           </ModalBody>

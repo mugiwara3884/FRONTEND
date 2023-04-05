@@ -78,11 +78,11 @@ const Login = () => {
       <Head title="Login" />
       <PageContainer>
         <Block className="nk-block-middle nk-auth-body  wide-xs">
-          <div className="brand-logo pb-4 text-center">
+          <div className="brand-logo text-center" >
             <Link to={process.env.PUBLIC_URL + "/"} className="logo-link">
             {/* <img className="logo-light logo-img logo-img-lg" src={acmeLogo} alt="logo" />
               <img className="logo-dark logo-img logo-img-lg" src={acmeLogo} alt="logo-dark" /> */}
-              <img className="logo-dark w-40" src={acmeLogo} alt="logo-dark" />
+              {/* <img className="logo-dark w-40" src={acmeLogo} alt="logo-dark" /> */}
               {/* <img className="logo-light w-80 h-80" src={acmeLogo} alt="logo" /> */}
             </Link>
           </div>
@@ -90,9 +90,18 @@ const Login = () => {
           <PreviewCard className="card-bordered" bodyClass="card-inner-lg">
             <BlockHead>
               <BlockContent>
-                <BlockTitle tag="h4">Sign-In</BlockTitle>
+              <div className="brand-logo text-center" >
+            <Link to={process.env.PUBLIC_URL + "/"} className="logo-link">
+            {/* <img className="logo-light logo-img logo-img-lg" src={acmeLogo} alt="logo" />
+              <img className="logo-dark logo-img logo-img-lg" src={acmeLogo} alt="logo-dark" /> */}
+              <img className="logo-dark w-50" src={acmeLogo} alt="logo-dark"></img>
+              {/* <img className="logo-light w-80 h-80" src={acmeLogo} alt="logo" /> */}
+            </Link>
+          </div>
+          <br></br>
+                <BlockTitle tag="h5" className="text-center"> Sign In - ACME DocuHub</BlockTitle>
                 <BlockDes>
-                  <p>Access ACME Upload Portal using your Email.</p>
+                  {/* <p>Access ACME Upload Portal using your Email.</p>  */}
                 </BlockDes>
               </BlockContent>
             </BlockHead>
@@ -108,7 +117,7 @@ const Login = () => {
                 <FormGroup>
                   <div className="form-label-group">
                     <label className="form-label" htmlFor="default-01">
-                      Email
+                      Login Id
                     </label>
                   </div>
                   <div className="form-control-wrap">

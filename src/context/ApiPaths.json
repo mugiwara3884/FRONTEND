@@ -2,8 +2,8 @@
     "endPoints": {
         "loginWIthOTP": "/user/loginWithOtp",
         "verifyOTP": "/user/verifyOtp",
-        "addUser": "/user/addUser",
-        "getUsers": "/user/getUsers",
+        "addUser": "newuser",
+        "getUsers": "get_user",
         "uploadFile": "/file/upload",
         "uploadByCustomer": "/file/uploadByCustomer",
         "addCustomer": "/customer/addCustomer",

@@ -4,7 +4,9 @@ import { AuthContext } from "../context/AuthContext";
 import React, { useState, useContext } from "react";
 
 
-const url = "http://localhost:4001/api"; //! local
+// const url = "http://localhost:4001/api"; //! local
+const url = "http://10.10.0.105:3000/"; //! live
+
 
 
 console.log("Token From local storage:", localStorage.getItem("token"))

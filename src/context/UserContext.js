@@ -17,6 +17,7 @@ export const UserContextProvider = (props) => {
     console.log(data);
     await AxiosPost("getUsers", data,
       (apiRes) => {
+        // console.log(apiRes);
         handleApiRes(apiRes)
       }, (apiError) => {
         handleApiError(apiError)
