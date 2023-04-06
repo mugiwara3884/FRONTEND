@@ -251,29 +251,31 @@ const UserListRegularPage = () => {
         add_group: formData.add_group,
         user_role: formData.user_role,
         max_quota: formData.max_quota
+        
       };
+      addUser(submittedData,
+        (apiRes) => {
+          console.log(apiRes);
+          const code = 200
+          // const { data: { data: { data, total }, meta: { code, message }, token } } = apiRes;
+          // console.log(" add user apiRes data", data);
+          // console.log(" add user apiRes message", message);
+          // console.log(" add user apiRes token", token);
+          if (code == 200) {
+            console.log("260");
+            resetForm();
+            setModal({ edit: false }, { add: false });
+            getUsers();
+  
+          }
+          setAuthToken(token);
+        },
+        (apiErr) => {
+          console.log(" add user apiErr ", apiErr)
+        });
       // setUserData([submittedData, ...userData]);
     }
-    addUser(submittedData,
-      (apiRes) => {
-        console.log(apiRes);
-        const code = 200
-        // const { data: { data: { data, total }, meta: { code, message }, token } } = apiRes;
-        // console.log(" add user apiRes data", data);
-        // console.log(" add user apiRes message", message);
-        // console.log(" add user apiRes token", token);
-        if (code == 200) {
-          console.log("260");
-          resetForm();
-          setModal({ edit: false }, { add: false });
-          getUsers();
-
-        }
-        setAuthToken(token);
-      },
-      (apiErr) => {
-        console.log(" add user apiErr ", apiErr)
-      });
+   
     // }
 
   };
@@ -318,7 +320,6 @@ const UserListRegularPage = () => {
 
   // function that loads the want to editted userData
   const onEditClick = (id) => {
-    debugger
     console.log("id........", id)
     console.log("userData........", userData)
     userData.map((item) => {
