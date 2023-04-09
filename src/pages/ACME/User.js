@@ -35,20 +35,15 @@ import {
   DataTableItem,
   TooltipComponent,
   RSelect,
-  // } from "../../../components/Component";
 } from "../../../src/components/Component";
-// import { filterRole, filterStatus, userData } from "./UserData";
 import { filterRole, filterStatus, userData } from "../../pages/pre-built/user-manage/UserData";
-// import { bulkActionOptions, findUpper } from "../../../utils/Utils";
 import { bulkActionOptions, findUpper } from "../../../src/utils/Utils";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-// import { UserContext } from "../../../src/pages/pre-built/user-manage/UserContext";
-// import { UserContext } from "./UserContext";
 import { UserContext } from "../../context/UserContext";
 import { AuthContext } from "../../context/AuthContext";
 const UserListRegularPage = () => {
-  const { contextData, addUser, getUser, updateUser } = useContext(UserContext);
+  const { contextData, addUser, getUser, updateUser ,getGroupsDropdown} = useContext(UserContext);
   const { setAuthToken } = useContext(AuthContext);
   console.log("contextData ", contextData)
   const [userData, setUserData] = contextData;
@@ -66,15 +61,14 @@ const UserListRegularPage = () => {
     display_name: "",
     emp_code: "",
     email: "",
-    // role: "Agent",
-    // status: "Active",
     add_group: "",
     user_role: "",
-    max_quota: ""
+    max_quota: "",
+    password:""
   });
   const [actionText, setActionText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemPerPage, setItemPerPage] = useState(10);
+  const [itemPerPage, setItemPerPage] = useState(5);
   const [totalUsers, setTotalUsers] = useState(1);
   const [sort, setSortState] = useState("");
   const [statusDropdown, setStatusDropDown] = useState([
@@ -86,8 +80,6 @@ const UserListRegularPage = () => {
     { value: "Agent", label: "Agent" },
     { value: "Admin", label: "Admin" }
   ]);
-
-  // Sorting userData
 
 
   const timezones = moment.tz.names().map((zone) => ({
@@ -107,19 +99,9 @@ const UserListRegularPage = () => {
   };
 
   // unselects the userData on mount
-  useEffect(() => {
-    let newData;
-    newData = userData.map((item) => {
-      item.checked = false;
-      return item;
-    });
-    setUserData([...newData]);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    getUsers();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  const getUsers = () => {
-    getUser({ pageNumber: currentPage, pageSize: itemPerPage, search: onSearchText },
+
+  const getRolesDropdown = () => {
+    getGroupsDropdown(
       (apiRes) => {
         console.log(" get user apiRes apiRes", apiRes);
         // const { data: { data :{data}},status, token }  = apiRes;
@@ -133,7 +115,7 @@ const UserListRegularPage = () => {
 
         if (code == 200) {
           setUserData(data);
-          // setTotalUsers(total)
+          setTotalUsers(data.length)
         }
         // setAuthToken(token);
       },
@@ -141,13 +123,58 @@ const UserListRegularPage = () => {
         console.log(" get user apiErr ", apiErr)
       })
   };
-  // Changing state value when searching name
+useEffect(()=>{
+  getRolesDropdown()
+},[])
+
+  
+  useEffect(() => {
+    let newData;
+    newData = userData.map((item) => {
+      item.checked = false;
+      return item;
+    });
+    setUserData([...newData]);
+  }, []);
+  
+
+
+  useEffect(() => {
+    getUsers();
+  }, [currentPage]);
+  
+
+  const getUsers = () => {
+    getUser({ pageNumber: currentPage, pageSize: itemPerPage, search: onSearchText },
+      (apiRes) => {
+        console.log(" get user apiRes apiRes", apiRes);
+        // const { data: { data :{data}},status, token }  = apiRes;
+        const data = apiRes.data.data
+        const code = apiRes.status
+        const message = apiRes.data.message
+        const count = apiRes.data.count
+        console.log(" get user apiRes data", data);
+        console.log(" get user apiRes message", message);
+        // console.log(" get user apiRes token", token);
+        console.log(" get user apiRes code", code);
+        setTotalUsers(count)
+
+        if (code == 200) {
+          setUserData(data);
+        }
+        // setAuthToken(token);
+      },
+      (apiErr) => {
+        console.log(" get user apiErr ", apiErr)
+      })
+  };
 
   const [timezone, setTimezone] = useState('');
   const timezoneOptions = Intl.DateTimeFormat().resolvedOptions().timeZone
     .split('/')
     .map((zone) => ({ value: zone, label: zone }));
-  // console.log(timezoneOptions);
+
+
   useEffect(() => {
     if (onSearchText !== "") {
       const filteredObject = userData.filter((item) => {
@@ -186,13 +213,11 @@ const UserListRegularPage = () => {
       display_name: "",
       emp_code: "",
       email: "",
-      // role: "Agent",
-      // status: "Active",
       add_group: "",
       user_role: "",
-      max_quota: ""
-
-    });
+      max_quota: "",
+      password:""
+ });
     setEditedId(0)
   };
 
@@ -213,11 +238,10 @@ const UserListRegularPage = () => {
         display_name: formData.display_name,
         emp_code: formData.emp_code,
         email: formData.email,
-        // role: formData.role,
-        // status: formData.status,
         add_group: formData.add_group,
         user_role: formData.user_role,
-        max_quota: formData.max_quota
+        max_quota: formData.max_quota,
+        password:formData.password
       };
       // setUserData([submittedData, ...userData]);
 
@@ -246,11 +270,10 @@ const UserListRegularPage = () => {
         display_name: formData.display_name,
         emp_code: formData.emp_code,
         email: formData.email,
-        // role: formData.role,
-        // status: formData.status,
         add_group: formData.add_group,
         user_role: formData.user_role,
-        max_quota: formData.max_quota
+        max_quota: formData.max_quota,
+        password:formData.password
         
       };
       addUser(submittedData,
@@ -266,6 +289,7 @@ const UserListRegularPage = () => {
             resetForm();
             setModal({ edit: false }, { add: false });
             getUsers();
+
   
           }
           setAuthToken(token);
@@ -333,6 +357,7 @@ const UserListRegularPage = () => {
           add_group: item.add_group,
           emp_code: item.emp_code,
           email: item.email,
+          password:item.password
           // role: item.user_role,
           // status: item.status
         });
@@ -345,7 +370,6 @@ const UserListRegularPage = () => {
     });
   };
 
-  console.log(formData,"dddsdsdsd");
 
   // function to change to suspend property for an item
   const suspendUser = (id) => {
@@ -389,7 +413,12 @@ const UserListRegularPage = () => {
   const currentItems = userData.slice(indexOfFirstItem, indexOfLastItem);
 
   // Change Page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => {
+    debugger
+    console.log(pageNumber);
+    setCurrentPage(pageNumber)
+
+ };
 
   const { errors, register, handleSubmit } = useForm();
 
@@ -404,7 +433,7 @@ const UserListRegularPage = () => {
                 Users Lists
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>You have total {userData.length} users.</p>
+                <p>You have total {totalUsers} users.</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -608,9 +637,9 @@ const UserListRegularPage = () => {
                   </UncontrolledDropdown> */}
                 {/* </DataTableRow> */}
               </DataTableHead>
-              {/*Head*/}
-              {currentItems.length > 0
-                ? currentItems.map((item) => {
+              
+              {userData.length > 0
+                ? userData.map((item) => {
                   return (
                     <DataTableItem key={item.user_id}>
 
@@ -768,13 +797,17 @@ const UserListRegularPage = () => {
                 : null}
             </DataTableBody>
             <div className="card-inner">
-              {currentItems.length > 0 ? (
+              {userData.length > 0 ? (
+                <div className="chat-user-pagination">
                 <PaginationComponent
-                  itemPerPage={itemPerPage}
+                  size="sm"
                   totalItems={totalUsers}
+                  itemPerPage={itemPerPage}
                   paginate={paginate}
+                  // maxPaginationNumbers={20}
                   currentPage={currentPage}
                 />
+              </div>
               ) : (
                 <div className="text-center">
                   <span className="text-silent">No userData found</span>
@@ -840,7 +873,7 @@ const UserListRegularPage = () => {
                         name="user_role"
                         defaultValue={formData.user_role}
                         onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                        placeholder="Enter user_role"
+                        placeholder="Enter User Role"
                         ref={register({ required: "This field is required" })}
                       />
                       {errors.user_role && <span className="invalid">{errors.user_role.message}</span>}
@@ -863,6 +896,23 @@ const UserListRegularPage = () => {
                       {errors.emp_code && <span className="invalid">{errors.emp_code.message}</span>}
                     </FormGroup>
                   </Col>
+
+                  <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Password</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        name="password"
+                        defaultValue={formData.password}
+                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                        // ref={register({ required: "This field is required" })}
+                        placeholder="Enter Password"
+                      />
+                      {errors.password && <span className="invalid">{errors.password.message}</span>}
+                    </FormGroup>
+                  </Col>
+
                   <Col md="12">
                     <FormGroup>
                       <label className="form-label">Email</label>
@@ -889,11 +939,14 @@ const UserListRegularPage = () => {
                         defaultValue={formData.add_group}
                         onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
                         // ref={register({ required: "This field is required" })}
-                        placeholder="Enter Values"
+                        placeholder="Add Group"
                       />
                       {errors.add_group && <span className="invalid">{errors.add_group.message}</span>}
                     </FormGroup>
                   </Col>
+
+
+                  
 
                   {/* <Col md="6">
                     <FormGroup>
@@ -920,16 +973,7 @@ const UserListRegularPage = () => {
                         />
                       </div>
                     </FormGroup> */}
-                  {/* <RSelect value={timezone} onChange={(e) => setTimezone(e.target.value)}>
-                      <option value="">Select timezone</option>
-                      {timezoneOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </RSelect> */}
-                  {/* </Col> */}
-
+                 
 
 
 

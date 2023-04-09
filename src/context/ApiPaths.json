@@ -3,6 +3,8 @@
         "loginWIthOTP": "/user/loginWithOtp",
         "verifyOTP": "/user/verifyOtp",
         "addUser": "newuser",
+        "get_groups": "get_groups",
+
         "getUsers": "get_user",
         "uploadFile": "/file/upload",
         "uploadByCustomer": "/file/uploadByCustomer",

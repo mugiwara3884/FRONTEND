@@ -23,6 +23,18 @@ export const UserContextProvider = (props) => {
         handleApiError(apiError)
       })
   };
+
+  async function getGroupsDropdown(data, handleSuccess,handleApiError) {
+    console.log(data);
+    await AxiosGet("get_groups",
+      (apiRes) => {
+        console.log(apiRes);
+        handleSuccess(apiRes)
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+
   async function updateUser(data, handleApiRes, handleApiError) {
     console.log(data);
     await AxiosPost("verifyOTP", data,
@@ -40,5 +52,6 @@ export const UserContextProvider = (props) => {
     addUser: addUser,
     getUser: getUser,
     updateUser: updateUser,
+    getGroupsDropdown:getGroupsDropdown
   }}>{props.children}</UserContext.Provider>;
 };
