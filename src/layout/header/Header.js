@@ -5,6 +5,10 @@ import Logo from "../logo/Logo";
 import News from "../news/News";
 import User from "./dropdown/user/User";
 import Notification from "./dropdown/notification/Notification";
+import acmeLogo from "../../images/acmeLogo.jpeg";
+import { Link } from "react-router-dom";
+
+
 
 const Header = ({ fixed, theme, className, setVisibility, ...props }) => {
   const headerClass = classNames({
@@ -15,8 +19,8 @@ const Header = ({ fixed, theme, className, setVisibility, ...props }) => {
     [`${className}`]: className,
   });
   return (
-    <div className={headerClass}>
-      <div className="container-fluid">
+    <div className={headerClass} style={{right:"-20px"}} >  
+      <div className="container-fluid"  >
         <div className="nk-header-wrap">
           <div className="nk-menu-trigger d-xl-none ml-n1">
             <Toggle
@@ -33,17 +37,39 @@ const Header = ({ fixed, theme, className, setVisibility, ...props }) => {
           </div>
           <div className="nk-header-tools">
             <ul className="nk-quick-nav">
-              <li className="user-dropdown"  onClick={() => setVisibility(false)}>
+              <p style={{
+                fontSize: '25px',
+                fontWeight: 'bold',
+                paddingLeft:"85px"
+              }} > DocuHub </p>
+            </ul>
+          </div>
+          <div className="nk-header-tools">
+            <ul className="nk-quick-nav">
+              <li className="user-dropdown" onClick={() => setVisibility(false)}>
                 <User />
               </li>
-              <li className="notification-dropdown mr-n1"  onClick={() => setVisibility(false)}>
+              <li className="notification-dropdown mr-n1" onClick={() => setVisibility(false)}>
                 {/* <Notification /> */}
               </li>
             </ul>
           </div>
+
+          <div >
+            <Link to={process.env.PUBLIC_URL + "/"} className="logo-link">
+              {/* <img className="logo-light logo-img logo-img-lg" src={acmeLogo} alt="logo" />
+              <img className="logo-dark logo-img logo-img-lg" src={acmeLogo} alt="logo-dark" /> */}
+              <img  style={{width:"100px",height:"67px"}} src={acmeLogo} alt="logo-dark"></img>
+              {/* <img className="logo-light w-80 h-80" src={acmeLogo} alt="logo" /> */}
+            </Link>
+          </div>
+
+
         </div>
       </div>
     </div>
+
+
   );
 };
 export default Header;

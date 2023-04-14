@@ -95,7 +95,7 @@
         position: relative;
         display: table-cell;
         vertical-align: middle;
-        padding: 1rem .5rem;
+        // padding: 1rem .5rem;
         @if($rtl==false){
             &:first-child{
                 padding-left: 1.25rem;

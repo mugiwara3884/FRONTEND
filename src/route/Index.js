@@ -2,6 +2,8 @@ import React, { Suspense, useLayoutEffect } from "react";
 import { Switch, Route } from "react-router-dom";
 import { ProductContextProvider } from "../pages/pre-built/products/ProductContext";
 import { UserContextProvider } from "../pages/pre-built/user-manage/UserContext";
+import { GroupsContextProvider } from "../pages/pre-built/groups-manage/GroupsContext";
+
 import { RedirectAs404 } from "../utils/Utils";
 
 import Homepage from "../pages/Homepage";
@@ -66,12 +68,16 @@ import ProjectCardPage from "../pages/pre-built/projects/ProjectCard";
 import ProjectListPage from "../pages/pre-built/projects/ProjectList";
 // import UserListRegularPage from "../pages/pre-built/user-manage/UserListRegular";
 import UserPage from "../pages/ACME/User";
+import GroupsPage from "../pages/ACME/Groups";
+
 import UserContactCardPage from "../pages/pre-built/user-manage/UserContactCard";
 import UserDetailsPage from "../pages/pre-built/user-manage/UserDetailsRegular";
 import UserListCompact from "../pages/pre-built/user-manage/UserListCompact";
 import UserProfileLayout from "../pages/pre-built/user-manage/UserProfileLayout";
 // import KycListRegular from "../pages/pre-built/kyc-list-regular/KycListRegular";
 import KycList from "../pages/ACME/KycList";
+import Groups from "../pages/ACME/Groups";
+
 import KycDetailsRegular from "../pages/pre-built/kyc-list-regular/kycDetailsRegular";
 import TransListBasic from "../pages/pre-built/trans-list/TransListBasic";
 import TransListCrypto from "../pages/pre-built/trans-list/TransListCrypto";
@@ -131,6 +137,15 @@ const Pages = () => {
             </UserContextProvider>
           )}
         ></Route>
+         {/* <Route //Context Api added
+          exact
+          path={`${process.env.PUBLIC_URL}/groups`}
+          render={() => (
+            <UserContextProvider>
+              <GroupsPage />
+            </UserContextProvider>
+          )}
+        ></Route> */}
         {/* <Route //Context Api added
           exact
           path={`${process.env.PUBLIC_URL}/user-list-regular`}
@@ -177,6 +192,8 @@ const Pages = () => {
         ></Route>
         {/* <Route exact path={`${process.env.PUBLIC_URL}/kyc-list-regular`} component={KycListRegular}></Route> */}
         <Route exact path={`${process.env.PUBLIC_URL}/kyc-list`} component={KycList}></Route>
+        <Route exact path={`${process.env.PUBLIC_URL}/groups`} component={Groups}></Route>
+
         <Route exact path={`${process.env.PUBLIC_URL}/kyc-details-regular/:id`} component={KycDetailsRegular}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/transaction-basic`} component={TransListBasic}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/transaction-crypto`} component={TransListCrypto}></Route>

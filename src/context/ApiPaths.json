@@ -4,7 +4,9 @@
         "verifyOTP": "/user/verifyOtp",
         "addUser": "newuser",
         "get_groups": "get_groups",
-
+        "add_group": "add_group",
+        "userDropdownU": "userdropdown",
+        "dropdown_groups": "dropdown_groups",
         "getUsers": "get_user",
         "uploadFile": "/file/upload",
         "uploadByCustomer": "/file/uploadByCustomer",

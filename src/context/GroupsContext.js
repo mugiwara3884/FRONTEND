@@ -1,8 +1,9 @@
 import React, { useState, createContext, useEffect } from "react";
-export const UserContext = createContext();
+export const GroupsContext = createContext();
 import { AxiosPost, AxiosGet } from './Axios'
 
-export const UserContextProvider = (props) => {
+export const GroupsContextProvider = (props) => {
+    debugger
   const [userData, setUserData] = useState([]);
 
   async function addUser(userSubmittedData, handleApiRes, handleApiError) {
@@ -13,17 +14,6 @@ export const UserContextProvider = (props) => {
         handleApiError(apiError)
       })
   };
-
-
-  async function add_group(userSubmittedData, handleApiRes, handleApiError) {
-    await AxiosPost("add_group", userSubmittedData,
-      (apiRes) => {
-        handleApiRes(apiRes)
-      }, (apiError) => {
-        handleApiError(apiError)
-      })
-  };
-
   async function getUser(data, handleApiRes, handleApiError) {
     console.log(data);
     await AxiosPost("getUsers", data,
@@ -35,36 +25,12 @@ export const UserContextProvider = (props) => {
       })
   };
 
-  async function getGroupsDropdown(data, handleSuccess, handleApiError) {
+  async function getGroupsDropdown(data, handleSuccess,handleApiError) {
     console.log(data);
-    await AxiosPost("dropdown_groups",data,
+    await AxiosGet("get_groups",
       (apiRes) => {
         console.log(apiRes);
         handleSuccess(apiRes)
-      }, (apiError) => {
-        handleApiError(apiError)
-      })
-  };
-
-  async function userDropdownU(data, handleApiRes, handleApiError) {
-    console.log(data);
-    await AxiosPost("userDropdownU", data,
-      (apiRes) => {
-        // console.log(apiRes);
-        handleApiRes(apiRes)
-      }, (apiError) => {
-        handleApiError(apiError)
-      })
-  };
-
-
-
-  async function getGroups(data, handleApiRes, handleApiError) {
-    console.log(data);
-    await AxiosPost("get_groups", data,
-      (apiRes) => {
-        // console.log(apiRes);
-        handleApiRes(apiRes)
       }, (apiError) => {
         handleApiError(apiError)
       })
@@ -82,14 +48,11 @@ export const UserContextProvider = (props) => {
       })
   };
 
-  return <UserContext.Provider value={{
+  return <GroupsContext.Provider value={{
     contextData: [userData, setUserData],
     addUser: addUser,
     getUser: getUser,
     updateUser: updateUser,
-    getGroupsDropdown: getGroupsDropdown,
-    getGroups: getGroups,
-    add_group:add_group,
-    userDropdownU:userDropdownU
-  }}>{props.children}</UserContext.Provider>;
+    getGroupsDropdown:getGroupsDropdown
+  }}>{props.children}</GroupsContext.Provider>;
 };

@@ -3,8 +3,6 @@ import { Pagination, PaginationLink, PaginationItem } from "reactstrap";
 import Icon from "../icon/Icon";
 
 const PaginationComponent = ({ itemPerPage, totalItems, paginate, currentPage ,pageLimit}) => {
-  debugger
-  console.log(itemPerPage, totalItems);
   const pageNumbers = [];
 
   for (let i = 1; i <= Math.ceil(totalItems / itemPerPage); i++) {

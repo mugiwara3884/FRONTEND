@@ -45,31 +45,68 @@ export const AuthContextProvider = (props) => {
         
         {
           icon: "users",
-          text: "Policies",
+          text: "Auth",
           active: false,
           // link: "/user-list",
           subMenu: [
             {
-              icon: "users",
+              icon: "whatsapp-round",
               text: "Groups",
               active: false,
-              // link: "/user-list"
+              link: "/groups"
             },
             {
+              // <em class="icon ni ni-linux-server"></em>
+              // <em class="icon ni ni-sign-mxr-alt"></em>
               icon: "users",
               text: "Users",
               active: false,
               link: "/user-list"
             },
+            {
+              icon: "users",
+              text: "Roles",
+              active: false,
+              link: "/groups"
+            },
           ],
         },
         
+
+        
         {
           icon: "users",
-          text: "Cabinet",
+          text: "Policies",//notepad type
+          active: false,
+          // link: "/user-list",
+          subMenu: [
+            {
+              icon: "1",
+              text: "1",
+              active: false,
+              link: "/groups"
+            },
+            {
+              icon: "2",
+              text: "2",
+              active: false,
+              link: "/user-list"
+            },
+          ],
+        },
+
+        {
+          icon: "users",//
+          text: "Storage",//file cabinet
           active: false,
           link: "/user-list",
           subMenu:[
+            {
+              icon: "users",
+              text: "Cabinet",
+              active: false,
+              link: "/user-list"
+            },
             {
               icon: "users",
               text: "Workspace",

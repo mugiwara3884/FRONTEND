@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import Logo from "../../images/logo.png";
 import LogoDark from "../../images/logo-dark.png";
 import PageContainer from "../../layout/page-container/PageContainer";
-import acmeLogo from "../../images/acmeLogo.jpeg";
+import acmeLogo from "../../images/AcmeTrans.png";
 import Head from "../../layout/head/Head";
 import AuthFooter from "./AuthFooter";
 import {
@@ -30,39 +30,39 @@ const Login = () => {
     setLoading(true);
     console.log(formData.mobile);
     // if (formData.mobile) {
-      // loginWithOTP({ mobile: formData.mobile },
-      //   apiSuccessRes => {
-      //     console.log("apiSuccessRes", apiSuccessRes);
-      //     const { data: { token,meta:{code,message} } } = apiSuccessRes;
-      //     console.log(token);
-      //     if(code==200){
-        let token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7InVzZXJJZCI6NSwidXNlck5hbWUiOiJHYXVyYXYiLCJ1c2VyRW1haWwiOiIiLCJ1c2VyTW9iaWxlTnVtYmVyIjoiOTkxMDIyNzIwNSIsInVzZXJSb2xlIjoiQWRtaW4iLCJ1c2VyU3RhdHVzIjoiQWN0aXZlIiwidXNlck9UUFZlcmlmaWVkIjp0cnVlfSwiaWF0IjoxNjc4OTU1NzgyfQ.HhgPCTkycuYZJyNGRNQsTvKQ4N9XbcgW9ft6wvCk9uc"
-            console.log(token);
-            setAuthToken(token)
-            setTimeout(() => {
-              window.history.pushState(
-                `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`,
-                "auth-login",
-                `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`
-              );
-              window.location.reload();
-            }, 1000);
-          // }
-          // else{
-          //   setTimeout(() => {
-          //     setError(message);
-          //     setLoading(false);
-          //   }, 2000);
-          // }
-        
-        // },
-        // apiErrorRes => {
-        //   console.log("loginError", apiErrorRes);
-        //   setTimeout(() => {
-        //     setError("Cannot login with credentials");
-        //     setLoading(false);
-        //   }, 2000);
-        // })
+    // loginWithOTP({ mobile: formData.mobile },
+    //   apiSuccessRes => {
+    //     console.log("apiSuccessRes", apiSuccessRes);
+    //     const { data: { token,meta:{code,message} } } = apiSuccessRes;
+    //     console.log(token);
+    //     if(code==200){
+    let token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7InVzZXJJZCI6NSwidXNlck5hbWUiOiJHYXVyYXYiLCJ1c2VyRW1haWwiOiIiLCJ1c2VyTW9iaWxlTnVtYmVyIjoiOTkxMDIyNzIwNSIsInVzZXJSb2xlIjoiQWRtaW4iLCJ1c2VyU3RhdHVzIjoiQWN0aXZlIiwidXNlck9UUFZlcmlmaWVkIjp0cnVlfSwiaWF0IjoxNjc4OTU1NzgyfQ.HhgPCTkycuYZJyNGRNQsTvKQ4N9XbcgW9ft6wvCk9uc"
+    console.log(token);
+    setAuthToken(token)
+    setTimeout(() => {
+      window.history.pushState(
+        `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`,
+        "auth-login",
+        `${process.env.PUBLIC_URL ? process.env.PUBLIC_URL : "/"}`
+      );
+      window.location.reload();
+    }, 1000);
+    // }
+    // else{
+    //   setTimeout(() => {
+    //     setError(message);
+    //     setLoading(false);
+    //   }, 2000);
+    // }
+
+    // },
+    // apiErrorRes => {
+    //   console.log("loginError", apiErrorRes);
+    //   setTimeout(() => {
+    //     setError("Cannot login with credentials");
+    //     setLoading(false);
+    //   }, 2000);
+    // })
 
     // } else {
     //   setTimeout(() => {
@@ -80,7 +80,7 @@ const Login = () => {
         <Block className="nk-block-middle nk-auth-body  wide-xs">
           <div className="brand-logo text-center" >
             <Link to={process.env.PUBLIC_URL + "/"} className="logo-link">
-            {/* <img className="logo-light logo-img logo-img-lg" src={acmeLogo} alt="logo" />
+              {/* <img className="logo-light logo-img logo-img-lg" src={acmeLogo} alt="logo" />
               <img className="logo-dark logo-img logo-img-lg" src={acmeLogo} alt="logo-dark" /> */}
               {/* <img className="logo-dark w-40" src={acmeLogo} alt="logo-dark" /> */}
               {/* <img className="logo-light w-80 h-80" src={acmeLogo} alt="logo" /> */}
@@ -90,15 +90,15 @@ const Login = () => {
           <PreviewCard className="card-bordered" bodyClass="card-inner-lg">
             <BlockHead>
               <BlockContent>
-              <div className="brand-logo text-center" >
-            <Link to={process.env.PUBLIC_URL + "/"} className="logo-link">
-            {/* <img className="logo-light logo-img logo-img-lg" src={acmeLogo} alt="logo" />
+                <div className="brand-logo text-center" >
+                  <Link to={process.env.PUBLIC_URL + "/"} className="logo-link">
+                    {/* <img className="logo-light logo-img logo-img-lg" src={acmeLogo} alt="logo" />
               <img className="logo-dark logo-img logo-img-lg" src={acmeLogo} alt="logo-dark" /> */}
-              <img className="logo-dark w-50" src={acmeLogo} alt="logo-dark"></img>
-              {/* <img className="logo-light w-80 h-80" src={acmeLogo} alt="logo" /> */}
-            </Link>
-          </div>
-          <br></br>
+                    <img className="logo-dark w-50" src={acmeLogo} alt="logo-dark"></img>
+                    {/* <img className="logo-light w-80 h-80" src={acmeLogo} alt="logo" /> */}
+                  </Link>
+                </div>
+                <br></br>
                 <BlockTitle tag="h5" className="text-center"> Sign In - ACME DocuHub</BlockTitle>
                 <BlockDes>
                   {/* <p>Access ACME Upload Portal using your Email.</p>  */}
@@ -113,66 +113,66 @@ const Login = () => {
                 </Alert>
               </div>
             )}
-             <Form className="is-alter" onSubmit={handleSubmit(onFormSubmit)}>
-                <FormGroup>
-                  <div className="form-label-group">
-                    <label className="form-label" htmlFor="default-01">
-                      Login Id
-                    </label>
-                  </div>
-                  <div className="form-control-wrap">
-                    <input
-                      type="email"
-                      id="default-01"
-                      name="email"
-                      ref={register({ required: "This field is required" })}
-                      // defaultValue="info@softnio.com"
-                      placeholder="Enter your registered email"
-                      className="form-control-lg form-control"
-                    />
-                    {errors.email && <span className="invalid">{errors.email.message}</span>}
-                  </div>
-                </FormGroup>
-                <FormGroup>
-                  <div className="form-label-group">
-                    <label className="form-label" htmlFor="password">
-                      Password
-                    </label>
-                    {/* <Link className="link link-primary link-sm" to={`${process.env.PUBLIC_URL}/auth-reset`}>
+            <Form className="is-alter" onSubmit={handleSubmit(onFormSubmit)}>
+              <FormGroup>
+                <div className="form-label-group">
+                  <label className="form-label" htmlFor="default-01">
+                    Login Id
+                  </label>
+                </div>
+                <div className="form-control-wrap">
+                  <input
+                    type="email"
+                    id="default-01"
+                    name="email"
+                    ref={register({ required: "This field is required" })}
+                    // defaultValue="info@softnio.com"
+                    placeholder="Enter your registered email"
+                    className="form-control-lg form-control"
+                  />
+                  {errors.email && <span className="invalid">{errors.email.message}</span>}
+                </div>
+              </FormGroup>
+              <FormGroup>
+                <div className="form-label-group">
+                  <label className="form-label" htmlFor="password">
+                    Password
+                  </label>
+                  {/* <Link className="link link-primary link-sm" to={`${process.env.PUBLIC_URL}/auth-reset`}>
                   Forgot Code?
                 </Link> */}
-                  </div>
-                  <div className="form-control-wrap">
-                    <a
-                      href="#password"
-                      onClick={(ev) => {
-                        ev.preventDefault();
-                        setPassState(!passState);
-                      }}
-                      className={`form-icon lg form-icon-right passcode-switch ${passState ? "is-hidden" : "is-shown"}`}
-                    >
-                      <Icon name="eye" className="passcode-icon icon-show"></Icon>
+                </div>
+                <div className="form-control-wrap">
+                  <a
+                    href="#password"
+                    onClick={(ev) => {
+                      ev.preventDefault();
+                      setPassState(!passState);
+                    }}
+                    className={`form-icon lg form-icon-right passcode-switch ${passState ? "is-hidden" : "is-shown"}`}
+                  >
+                    <Icon name="eye" className="passcode-icon icon-show"></Icon>
 
-                      <Icon name="eye-off" className="passcode-icon icon-hide"></Icon>
-                    </a>
-                    <input
-                      type={passState ? "text" : "password"}
-                      id="password"
-                      name="password"
-                      defaultValue=""
-                      ref={register({ required: "This field is required" })}
-                      placeholder="Enter your password"
-                      className={`form-control-lg form-control ${passState ? "is-hidden" : "is-shown"}`}
-                    />
-                    {errors.password && <span className="invalid">{errors.password.message}</span>}
-                  </div>
-                </FormGroup>
-                <FormGroup>
-                  <Button size="lg" className="btn-block" type="submit" color="primary">
-                    {loading ? <Spinner size="sm" color="light" /> : "Login"}
-                  </Button>
-                </FormGroup>
-              </Form>
+                    <Icon name="eye-off" className="passcode-icon icon-hide"></Icon>
+                  </a>
+                  <input
+                    type={passState ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    defaultValue=""
+                    ref={register({ required: "This field is required" })}
+                    placeholder="Enter your password"
+                    className={`form-control-lg form-control ${passState ? "is-hidden" : "is-shown"}`}
+                  />
+                  {errors.password && <span className="invalid">{errors.password.message}</span>}
+                </div>
+              </FormGroup>
+              <FormGroup>
+                <Button size="lg" className="btn-block" type="submit" color="primary">
+                  {loading ? <Spinner size="sm" color="light" /> : "Login"}
+                </Button>
+              </FormGroup>
+            </Form>
             {/* <div className="form-note-s2 text-center pt-4">
               {" "}
               New on our platform? <Link to={`${process.env.PUBLIC_URL}/auth-register`}>Create an account</Link>

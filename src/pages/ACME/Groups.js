@@ -47,7 +47,7 @@ import { AuthContext } from "../../context/AuthContext";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 const UserListRegularPage = () => {
-  const { contextData, addUser, getUser, updateUser, getGroupsDropdown } = useContext(UserContext);
+  const { contextData, add_group, getUser, updateUser, getGroups, userDropdownU } = useContext(UserContext);
   const { setAuthToken } = useContext(AuthContext);
   console.log("contextData ", contextData)
   const [userData, setUserData] = contextData;
@@ -66,14 +66,10 @@ const UserListRegularPage = () => {
   }
   const [editId, setEditedId] = useState();
   const [formData, setFormData] = useState({
-    userValidity: "",
-    display_name: "",
-    emp_code: "",
-    email: "",
-    add_group: "",
-    user_role: "",
-    max_quota: "",
-    password: ""
+
+    group_name: "",
+    group_admin: "",
+    selected_user: "",
   });
   const [actionText, setActionText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -90,7 +86,7 @@ const UserListRegularPage = () => {
     { value: "Admin", label: "Admin" }
   ]);
 
-  const [groupsDropdown, setGroupsDropdown] = useState([]);
+  const [userDropdowns, setUserDropdowns] = useState([]);
 
 
 
@@ -112,11 +108,39 @@ const UserListRegularPage = () => {
   };
 
   // unselects the userData on mount
-  const getRolesDropdown = () => {
-    getGroupsDropdown({},
-      
+
+  // useEffect(() => {
+  //   getTotalGroups()
+  // }, [formData])
+
+
+  useEffect(() => {
+    let newData;
+    newData = userData.map((item) => {
+      item.checked = false;
+      return item;
+    });
+    setUserData([...newData]);
+  }, []);
+
+
+
+  useEffect(() => {
+    getTotalGroups();
+  }, [currentPage]);
+
+
+  useEffect(() => {
+    debugger
+    getTotalGroups();
+  }, [formData]);
+
+
+  const getUserRselect = () => {
+    debugger
+    userDropdownU({},
       (apiRes) => {
-        console.log(" get user apiRes apiRes===============================================", apiRes);
+        console.log(" get user apiRes apiRes", apiRes);
         // const { data: { data :{data}},status, token }  = apiRes;
         const data = apiRes.data
         const code = apiRes.status
@@ -130,10 +154,10 @@ const UserListRegularPage = () => {
           { value: 'es', label: 'Spanish' },
           { value: 'fr', label: 'French' },
         ]
-        setGroupsDropdown(
-          data.groups.map((gro) => ({
-            label: gro.group_name,
-            value: gro.id,
+        setUserDropdowns(
+          data.data.map((gro) => ({
+            label: gro.email,
+            value: gro.email,
           }))
         );
 
@@ -145,28 +169,16 @@ const UserListRegularPage = () => {
   };
 
 
+  // useEffect(() => {
+  //   getUserRselect()
+  // })
+
   useEffect(() => {
-    debugger
-    getRolesDropdown()
+    getUserRselect()
   }, [])
-  useEffect(() => {
-    let newData;
-    newData = userData.map((item) => {
-      item.checked = false;
-      return item;
-    });
-    setUserData([...newData]);
-  }, []);
 
-
-
-  useEffect(() => {
-    getUsers();
-  }, [currentPage]);
-
-
-  const getUsers = () => {
-    getUser({ pageNumber: currentPage, pageSize: itemPerPage, search: onSearchText },
+  const getTotalGroups = () => {
+    getGroups({ pageNumber: currentPage, pageSize: itemPerPage, search: onSearchText },
       (apiRes) => {
         console.log(" get user apiRes apiRes", apiRes);
         // const { data: { data :{data}},status, token }  = apiRes;
@@ -197,18 +209,9 @@ const UserListRegularPage = () => {
 
 
   useEffect(() => {
-    if (onSearchText !== "") {
-      const filteredObject = userData.filter((item) => {
-        return (
-          item.name.toLowerCase().includes(onSearchText.toLowerCase()) ||
-          item.email.toLowerCase().includes(onSearchText.toLowerCase())
-        );
-      });
-      setUserData([...filteredObject]);
-    } else {
-      setUserData([...userData]);
-    }
-  }, [onSearchText, setUserData]);
+    getTotalGroups();
+  }, [currentPage]);
+
 
   // function to set the action to be taken in table header
   const onActionText = (e) => {
@@ -231,14 +234,9 @@ const UserListRegularPage = () => {
   // function to reset the form
   const resetForm = () => {
     setFormData({
-      userValidity: "",
-      display_name: "",
-      emp_code: "",
-      email: "",
-      add_group: "",
-      user_role: "",
-      max_quota: "",
-      password: ""
+      selected_user: "",
+      group_name: "",
+      group_admin: "",
     });
     setEditedId(0)
   };
@@ -251,25 +249,19 @@ const UserListRegularPage = () => {
 
   // submit function to add a new item
   const onFormSubmit = () => {
-    debugger
     // console.log("user submitData ", submitData)
     console.log("user formData ", formData)
     // const { name, email, phone } = submitData;
     if (editId) {
       let submittedData = {
         id: editId,
-        userValidity: formData.userValidity,
-        display_name: formData.display_name,
-        emp_code: formData.emp_code,
-        email: formData.email,
-        add_group: formData.add_group,
-        user_role: formData.user_role,
-        max_quota: formData.max_quota,
-        password: formData.password
+        selected_user: formData.selected_user,
+        group_name: formData.group_name,
+        group_admin: formData.group_admin,
       };
       // setUserData([submittedData, ...userData]);
 
-      addUser(submittedData,
+      add_group(submittedData,
         (apiRes) => {
           console.log(apiRes);
           const code = 200
@@ -281,7 +273,7 @@ const UserListRegularPage = () => {
             console.log("260");
             resetForm();
             setModal({ edit: false }, { add: false });
-            getUsers();
+            getTotalGroups();
 
           }
           setAuthToken(token);
@@ -291,17 +283,12 @@ const UserListRegularPage = () => {
         });
     } else {
       let submittedData = {
-        userValidity: formData.userValidity,
-        display_name: formData.display_name,
-        emp_code: formData.emp_code,
-        email: formData.email,
-        add_group: formData.add_group,
-        user_role: formData.user_role,
-        max_quota: formData.max_quota,
-        password: formData.password
+        group_name: formData.group_name,
+        group_admin: formData.group_admin,
+        selected_user: formData.selected_user,
 
       };
-      addUser(submittedData,
+      add_group(submittedData,
         (apiRes) => {
           console.log(apiRes);
           const code = 200
@@ -333,7 +320,7 @@ const UserListRegularPage = () => {
   // const onEditSubmit = (submitData) => {
   //   debugger
   //   console.log(submitData);
-  //   const { display_name, email, emp_code, add_group, user_role } = submitData;
+  //   const { group_name, email, group_admin, add_group, user_role } = submitData;
   //   let submittedData;
   //   let newitems = userData;
   //   newitems.forEach((item) => {
@@ -342,15 +329,15 @@ const UserListRegularPage = () => {
   //       submittedData = {
   //         id: item.id,
   //         avatarBg: item.avatarBg,
-  //         display_name: display_name,
+  //         group_name: group_name,
   //         user_role: user_role,
-  //         max_quota: max_quota,
+  //         selected_user: selected_user,
   //         add_group: add_group,
   //         image: item.image,
   //         role: item.role,
   //         email: email,
   //         balance: formData.balance,
-  //         emp_code: emp_code,
+  //         group_admin: group_admin,
   //         emailStatus: item.emailStatus,
   //         kycStatus: item.kycStatus,
   //         lastLogin: item.lastLogin,
@@ -376,14 +363,9 @@ const UserListRegularPage = () => {
         console.log(item, "sds");
         setFormData({
           id: id,
-          userValidity: formData.userValidity,
-          display_name: item.display_name,
-          user_role: item.user_role,
-          max_quota: item.max_quota,
-          add_group: item.add_group,
-          emp_code: item.emp_code,
-          email: item.email,
-          password: item.password
+          group_name: item.group_name,
+          selected_user: item.selected_user,
+          group_admin: item.group_admin,
           // role: item.user_role,
           // status: item.status
         });
@@ -404,7 +386,19 @@ const UserListRegularPage = () => {
     newData[index].status = "Suspend";
     setUserData([...newData]);
   };
-
+  useEffect(() => {
+    if (onSearchText !== "") {
+      const filteredObject = userData.filter((item) => {
+        return (
+          item.name.toLowerCase().includes(onSearchText.toLowerCase()) ||
+          item.email.toLowerCase().includes(onSearchText.toLowerCase())
+        );
+      });
+      setUserData([...filteredObject]);
+    } else {
+      setUserData([...userData]);
+    }
+  }, [onSearchText, setUserData]);
   // function to change the check property of an item
   const selectorCheck = (e) => {
     let newData;
@@ -464,10 +458,10 @@ const UserListRegularPage = () => {
           <BlockBetween>
             <BlockHeadContent>
               <BlockTitle tag="h3" page>
-                Users Lists
+                Groups
               </BlockTitle>
               <BlockDes className="text-soft">
-                <p>You have total {totalUsers} users.</p>
+                <p>You have total {totalUsers} groups.</p>
               </BlockDes>
             </BlockHeadContent>
             <BlockHeadContent>
@@ -502,42 +496,7 @@ const UserListRegularPage = () => {
           <DataTable className="card-stretch">
             <div className="card-inner position-relative card-tools-toggle">
               <div className="card-title-group">
-                {/* <div className="card-tools">
-                  <div className="form-inline flex-nowrap gx-3">
-                    <div className="form-wrap">
-                      <RSelect
-                        options={bulkActionOptions}
-                        className="w-130px"
-                        placeholder="Bulk Action"
-                        onChange={(e) => onActionText(e)}
-                      />
-                    </div>
-                    <div className="btn-wrap">
-                      <span className="d-none d-md-block">
-                        <Button
-                          disabled={actionText !== "" ? false : true}
-                          color="light"
-                          outline
-                          className="btn-dim"
-                          onClick={(e) => onActionClick(e)}
-                        >
-                          Apply
-                        </Button>
-                      </span>
-                      <span className="d-md-none">
-                        <Button
-                          color="light"
-                          outline
-                          disabled={actionText !== "" ? false : true}
-                          className="btn-dim btn-icon"
-                          onClick={(e) => onActionClick(e)}
-                        >
-                          <Icon name="arrow-right"></Icon>
-                        </Button>
-                      </span>
-                    </div>
-                  </div>
-                </div> */}
+
                 <div className="card-tools mr-n1">
                   <ul className="btn-toolbar gx-1">
                     <li>
@@ -552,15 +511,8 @@ const UserListRegularPage = () => {
                         <Icon name="search"></Icon>
                       </a>
                     </li>
-                    {/* <li className="btn-toolbar-sep"></li> */}
                     <li>
                       <div className="toggle-wrap">
-                        {/* <Button
-                          className={`btn-icon btn-trigger toggle ${tablesm ? "active" : ""}`}
-                          onClick={() => updateTableSm(true)}
-                        >
-                          <Icon name="menu-right"></Icon>
-                        </Button> */}
                         <div className={`toggle-content ${tablesm ? "content-active" : ""}`}>
                           <ul className="btn-toolbar gx-1">
                             <li className="toggle-close">
@@ -604,96 +556,32 @@ const UserListRegularPage = () => {
             <DataTableBody>
               <DataTableHead>
                 <DataTableRow>
-                  <span className="sub-text">Display Name</span>
+                  <span className="sub-text">Group Name</span>
                 </DataTableRow>
                 <DataTableRow size="md">
-                  <span className="sub-text">Email</span>
-                </DataTableRow>
-                <DataTableRow size="md">
-                  <span className="sub-text">Employee Code</span>
+                  <span className="sub-text">Group Admin</span>
                 </DataTableRow>
                 <DataTableRow size="lg">
-                  <span className="sub-text">Max Quota</span>
+                  <span className="sub-text">Selected User</span>
                 </DataTableRow>
-                <DataTableRow size="lg">
-                  <span className="sub-text"> User Role</span>
-                </DataTableRow>
-                {/* <DataTableRow size="md">
-                  <span className="sub-text">Status</span>
-                </DataTableRow> */}
-                {/* <DataTableRow className="nk-tb-col-tools text-right"> */}
-                <DataTableRow size="md">
+
+                <DataTableRow className="nk-tb-actions gx-1">
                   <span className="sub-text">Action</span>
                 </DataTableRow>
               </DataTableHead>
-
               {userData.length > 0
                 ? userData.map((item) => {
                   return (
                     <DataTableItem key={item.user_id}>
-
-                      {/* <DataTableRow> */}
-                      {/* <Link to={`${process.env.PUBLIC_URL}/user-details-regular/${item.user_id}`}> */}
-                      {/* <div className="user-card"> */}
-                      {/* <UserAvatar
-                            theme={item.avatarBg}
-                            // text={findUpper(item.user_name)}
-                            image={item.image}
-                          ></UserAvatar> */}
-                      {/* <div className="user-info">
-                            <span className="tb-lead">
-                              {item.user_name}{" "}
-                              <span
-                                className={`dot dot-${item.user_status === "Active"
-                                  ? "success"
-                                  : "danger"
-                                  } d-md-none ml-1`}
-                              ></span>
-                            </span>
-                            <span>{item.user_email}</span>
-                          </div> */}
-                      {/* </div> */}
-                      {/* </Link> */}
-                      {/* </DataTableRow> */}
-                      {/* <DataTableRow size="mb">
-                          <span className="tb-amount">
-                            {item.balance} <span className="currency">USD</span>
-                          </span>
-                        </DataTableRow> */}
                       <DataTableRow size="md" style={{ innerHeight: "10px" }} >
-                        <span>{item.display_name}</span>
-                      </DataTableRow>
-
-                      <DataTableRow size="lg">
-                        <ul className="list-status">
-                          <li>
-                            <Icon
-                              className={`text-success}`}
-                              name={`${"check-circle"}`}
-                            ></Icon>{" "}
-                            <span
-                              className={`tb-status text-${item.user_status === "Active" ? "success" : "danger"
-                                }`}
-                            >
-                              {item.email}
-                            </span>
-                          </li>
-
-                        </ul>
+                        <span>{item.group_name}</span>
                       </DataTableRow>
                       <DataTableRow size="md">
-                        <span>{item.emp_code}</span>
+                        <span>{item.group_admin}</span>
                       </DataTableRow>
-                      <DataTableRow size="md">
-                        <span>{item.max_quota}</span>
+                      <DataTableRow>
+                        <span>{item.selected_user}</span>
                       </DataTableRow>
-                      <DataTableRow size="md">
-                        <span>{item.user_role}</span>
-                      </DataTableRow>
-
-                      {/* <DataTableRow size="lg">
-                        <span>{new Date(item.updated_at).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })}</span>
-                      </DataTableRow> */}
 
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
@@ -706,29 +594,9 @@ const UserListRegularPage = () => {
                               direction="top"
                               text="Edit"
                               style={{ backgroundColor: "transparent", boxShadow: "none", color: "inherit" }}
-
                             />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-
                           </li>
-
-                          <li className="" onClick={() => onEditClick(item.id)}>
-                            <TooltipComponent
-                              tag="a"
-                              containerClassName="btn btn-trigger btn-icon"
-                              id={"edit" + item.id}
-                              icon="block-alt-fill"
-                              direction="top"
-                              text="Edit"
-                              style={{ backgroundColor: "transparent", boxShadow: "none", color: "inherit" }}
-
-                            />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-
-                          </li>
-
                           <Switch
-
                             onChange={(checked) => handleStatusToggle(item.id, checked)}
                             checked={item.user_status === "Active"}
                             checkedIcon={false}
@@ -738,7 +606,6 @@ const UserListRegularPage = () => {
                             height={20}
                             width={36}
                             handleDiameter={14}
-
                           />
                         </ul>
                       </DataTableRow>
@@ -781,197 +648,71 @@ const UserListRegularPage = () => {
             </a>
             <div className="p-2">
               <h5 className="title">
-                {editId ? "Update User" : "Add User"}
+                {editId ? "Update Group" : "Add Group"}
               </h5>
               <div className="mt-4">
                 <Form className="row gy-4" noValidate onSubmit={handleSubmit(onFormSubmit)}>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Display Name</label>
+                      <label className="form-label">Group Name</label>
                       <input
                         className="form-control"
                         type="text"
-                        name="display_name"
-                        defaultValue={formData.display_name}
+                        name="group_name"
+                        defaultValue={formData.group_name}
                         onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                        placeholder="Enter display_name"
+                        placeholder="Enter group_name"
                         ref={register({ required: "This field is required" })}
                       />
-                      {errors.display_name && <span className="invalid">{errors.display_name.message}</span>}
+                      {errors.group_name && <span className="invalid">{errors.group_name.message}</span>}
                     </FormGroup>
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">Max Quota</label>
+                      <label className="form-label">Selected Users</label>
+                      <RSelect
+                        options={userDropdowns}
+                        name="add_group"
+                        defaultValue="Please Select Groups"
+                        onChange={(e) => setFormData({ ...formData, selected_user: e.label, [e.label]: e.value })}
+                        ref={register({ required: "This field is required" })}
+
+                      />
+                      {errors.selected_user && <span className="invalid">{errors.selected_user.message}</span>}
+                    </FormGroup>
+                  </Col>
+                  {/* <Col md="6">
+                    <FormGroup>
+                      <label className="form-label">Selected User</label>
                       <input
                         className="form-control"
                         type="text"
-                        name="max_quota"
-                        defaultValue={formData.max_quota}
+                        name="selected_user"
+                        defaultValue={formData.selected_user}
                         onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
                         placeholder="Enter Quota"
                         ref={register({ required: "This field is required" })}
                       />
-                      {errors.max_quota && <span className="invalid">{errors.max_quota.message}</span>}
+                      {errors.selected_user && <span className="invalid">{errors.selected_user.message}</span>}
                     </FormGroup>
-                  </Col>
+                  </Col> */}
                   <Col md="6">
                     <FormGroup>
-                      <label className="form-label">User Role</label>
+                      <label className="form-label">Group Admin</label>
                       <input
                         className="form-control"
-                        type="text"
-                        name="user_role"
-                        defaultValue={formData.user_role}
-                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                        placeholder="Enter User Role"
-                        ref={register({ required: "This field is required" })}
-                      />
-                      {errors.user_role && <span className="invalid">{errors.user_role.message}</span>}
-                    </FormGroup>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Employee Code</label>
-                      <input
-                        className="form-control"
-                        name="emp_code"
-                        defaultValue={formData.emp_code}
+                        name="group_admin"
+                        defaultValue={formData.group_admin}
                         ref={register({ required: "This field is required" })}
                         minLength={10}
                         maxLength={10}
                         onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                        placeholder="Enter Employee Code"
+                        placeholder="Enter Group Admin"
                         required
                       />
-                      {errors.emp_code && <span className="invalid">{errors.emp_code.message}</span>}
+                      {errors.group_admin && <span className="invalid">{errors.group_admin.message}</span>}
                     </FormGroup>
                   </Col>
-
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Password</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="password"
-                        defaultValue={formData.password}
-                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                        // ref={register({ required: "This field is required" })}
-                        placeholder="Enter Password"
-                        ref={register({ required: 'This field is required' })}
-                      />
-                      {errors.password && <span className="invalid">{errors.password.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Confirm Password</label>
-                      <input
-                        className="form-control"
-                        type="password"
-                        name="confirmPassword"
-                        defaultValue=""
-                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                        placeholder="Confirm Password"
-                        ref={register({
-                          required: 'This field is required',
-                          validate: (value) => value === watch('password') || "Passwords don't match"
-                        })}
-                      />
-                      {errors.confirmPassword && <span className="invalid">{errors.confirmPassword.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-
-
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Email</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="email"
-                        defaultValue={formData.email}
-                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                        // ref={register({ required: "This field is required" })}
-                        placeholder="Enter Email"
-                      />
-                      {errors.email && <span className="invalid">{errors.email.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="12">
-                    <FormGroup>
-
-                      <label className="form-label">Add to Groups</label>
-                      <RSelect
-                        options={groupsDropdown}
-                        name="add_group"
-                        defaultValue="Please Select Groups"
-                        onChange={(e) => setFormData({ ...formData, add_group: e.label, [e.label]: e.value })}
-                      />
-                      {/* <input
-                        className="form-control"
-                        type="text"
-                        name="add_group"
-                        defaultValue={formData.add_group}
-                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
-                        // ref={register({ required: "This field is required" })}
-                        placeholder="Add Group"
-                      /> */}
-                      {errors.add_group && <span className="invalid">{errors.add_group.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-
-                  <Col md="6"  >
-                    <FormGroup label="Validity" className="form-label">
-                      <label className="form-label">Validity</label>
-
-                      <DatePicker
-                        name="userValidity"
-
-                        selected={formData.userValidity}
-                        onChange={(e) => setFormData({ ...formData, userValidity: e })}
-                        dateFormat="dd/MM/yyyy"
-                        placeholderText="Select Validity"
-                        showYearDropdown
-                        scrollableYearDropdown
-                        yearDropdownItemNumber={100}
-                      />
-
-                      {/* {errors.confirmPassword && <span className="invalid">{errors.confirmPassword.message}</span>} */}
-                    </FormGroup>
-                  </Col>
-
-                  {/* <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Language</label>
-                      <div className="form-control-wrap">
-                        <RSelect
-                          options={statusDropdown}
-                          defaultValue="Please Select Language"
-                          onChange={(e) => setFormData({ ...formData, status: e.value })}
-                        />
-                      </div>
-                    </FormGroup>
-                  </Col>
-                  <Col md="6" >
-
-                  <FormGroup>
-                      <label className="form-label">Time Zones</label>
-                      <div className="form-control-wrap">
-                        <RSelect
-                          options={timezoneOptions}
-                          defaultValue="Please Select zone"
-                          onChange={(e) => setTimezone(e.target.value)}
-                          // onChange={(e) => setFormData({ ...formData, status: e.value })}
-                        />
-                      </div>
-                    </FormGroup> */}
 
 
 
@@ -981,7 +722,7 @@ const UserListRegularPage = () => {
                       <li>
                         <Button color="primary" size="md" type="submit"
                         >
-                          {editId ? "Update User" : "Add User"}
+                          {editId ? "Update Group" : "Add Group"}
 
                         </Button>
                       </li>
@@ -1020,79 +761,6 @@ const UserListRegularPage = () => {
             <div className="p-2">
               <h5 className="title">Update User</h5>
               <div className="mt-4">
-                {/* <Form className="row gy-4" onSubmit={handleSubmit(onEditSubmit)}>
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Name</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="name"
-                        defaultValue={formData.name}
-                        placeholder="Enter name"
-                        ref={register({ required: "This field is required" })}
-                      />
-                      {errors.name && <span className="invalid">{errors.name.message}</span>}
-                    </FormGroup>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <label className="form-label">Email</label>
-                      <input
-                        className="form-control"
-                        type="text"
-                        name="email"
-                        defaultValue={formData.email}
-                        placeholder="Enter email"
-                        ref={register({
-                          required: "This field is required",
-                          pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "invalid email address",
-                          },
-                        })}
-                      />
-                      {errors.email && <span className="invalid">{errors.email.message}</span>}
-                    </FormGroup>
-                  </Col>
-
-                  <Col md="12">
-                    <FormGroup>
-                      <label className="form-label">Status</label>
-                      <div className="form-control-wrap">
-                        <RSelect
-                          options={filterStatus}
-                          defaultValue={{
-                            value: formData.status,
-                            label: formData.status,
-                          }}
-                          onChange={(e) => setFormData({ ...formData, status: e.value })}
-                        />
-                      </div>
-                    </FormGroup>
-                  </Col>
-                  <Col size="12">
-                    <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
-                      <li>
-                        <Button color="primary" size="md" type="submit">
-                          Update Usersss
-                        </Button>
-                      </li>
-                      <li>
-                        <a
-                          href="#cancel"
-                          onClick={(ev) => {
-                            ev.preventDefault();
-                            onFormCancel();
-                          }}
-                          className="link link-light"
-                        >
-                          Cancel
-                        </a>
-                      </li>
-                    </ul>
-                  </Col>
-                </Form> */}
               </div>
             </div>
           </ModalBody>
