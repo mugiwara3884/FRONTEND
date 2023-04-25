@@ -430,7 +430,7 @@ const Workspace = () => {
     // const { name, email, phone } = submitData;
     if (editId) {
       let submittedData = {
-        id: editId,
+        workspace_id: editId,
         permission_upload: permisssionData.permission_upload,
         permission_view: permisssionData.permission_view,
         permission_createfolder: permisssionData.permission_createfolder,
