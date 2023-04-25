@@ -6,9 +6,21 @@ export const UserContextProvider = (props) => {
   const [userData, setUserData] = useState([]);
 
   async function addUser(userSubmittedData, handleApiRes, handleApiError) {
+    console.log("--------------------------",handleApiRes)
     await AxiosPost("addUser", userSubmittedData,
       (apiRes) => {
-        handleApiRes(apiRes)
+        handleApiRes(apiRes)               
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+
+
+  async function addPermission(userSubmittedData, handleApiRes, handleApiError) {
+    console.log("--------------------------",handleApiRes)
+    await AxiosPost("wauth", userSubmittedData,
+      (apiRes) => {
+        handleApiRes(apiRes)               
       }, (apiError) => {
         handleApiError(apiError)
       })
@@ -24,6 +36,45 @@ export const UserContextProvider = (props) => {
       })
   };
 
+  async function addCabinet(userSubmittedData, handleApiRes, handleApiError) {
+    await AxiosPost("add_cabinet", userSubmittedData,
+      (apiRes) => {
+        handleApiRes(apiRes)
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+
+
+  async function addWorkspace(userSubmittedData, handleApiRes, handleApiError) {
+    await AxiosPost("addWorkspace", userSubmittedData,
+      (apiRes) => {
+        handleApiRes(apiRes)
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+
+  async function addFolderWork(userSubmittedData, handleApiRes, handleApiError) {
+    await AxiosPost("addFolder", userSubmittedData,
+      (apiRes) => {
+        handleApiRes(apiRes)
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+
+
+  async function addFolderWork(userSubmittedData, handleApiRes, handleApiError) {
+    await AxiosPost("addFolder", userSubmittedData,
+      (apiRes) => {
+        handleApiRes(apiRes)
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+
+
   async function getUser(data, handleApiRes, handleApiError) {
     console.log(data);
     await AxiosPost("getUsers", data,
@@ -35,9 +86,65 @@ export const UserContextProvider = (props) => {
       })
   };
 
+
+  async function getCabinet(data, handleApiRes, handleApiError) {
+    console.log(data);
+    await AxiosPost("getCabinet", data,
+      (apiRes) => {
+        // console.log(apiRes);
+        handleApiRes(apiRes)
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+
+
+  async function getWorkspace(data, handleApiRes, handleApiError) {
+    console.log(data);
+    await AxiosPost("getworkspace", data,
+      (apiRes) => {
+        // console.log(apiRes);
+        handleApiRes(apiRes)
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+
+  async function deleteUser(data, handleApiRes, handleApiError) {
+    await AxiosPost("deleteuser", data,
+      (apiRes) => {
+        // console.log(apiRes);
+        handleApiRes(apiRes)
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+
+  async function blockUser(data, handleApiRes, handleApiError) {
+    await AxiosPost("blockuser", data,
+      (apiRes) => {
+        // console.log(apiRes);
+        handleApiRes(apiRes)
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+
+
   async function getGroupsDropdown(data, handleSuccess, handleApiError) {
     console.log(data);
     await AxiosPost("dropdown_groups",data,
+      (apiRes) => {
+        console.log(apiRes);
+        handleSuccess(apiRes)
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+
+  async function cabinetDropdown(data, handleSuccess, handleApiError) {
+    console.log(data);
+    await AxiosPost("cabinetdropdown",data,
       (apiRes) => {
         console.log(apiRes);
         handleSuccess(apiRes)
@@ -56,8 +163,6 @@ export const UserContextProvider = (props) => {
         handleApiError(apiError)
       })
   };
-
-
 
   async function getGroups(data, handleApiRes, handleApiError) {
     console.log(data);
@@ -90,6 +195,15 @@ export const UserContextProvider = (props) => {
     getGroupsDropdown: getGroupsDropdown,
     getGroups: getGroups,
     add_group:add_group,
-    userDropdownU:userDropdownU
+    userDropdownU:userDropdownU,
+    getCabinet:getCabinet,
+    addCabinet:addCabinet,
+    deleteUser:deleteUser,
+    blockUser:blockUser,
+    getWorkspace:getWorkspace,
+    addWorkspace:addWorkspace,
+    cabinetDropdown:cabinetDropdown,
+    addFolderWork:addFolderWork,
+    addPermission:addPermission
   }}>{props.children}</UserContext.Provider>;
 };

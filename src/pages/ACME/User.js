@@ -3,9 +3,10 @@ import React, { useContext, useEffect, useState } from "react";
 import Content from "../../layout/content/Content";
 // import Head from "../../../layout/head/Head";
 import Head from "../../layout/head/Head";
-import moment from 'moment-timezone';
-import Switch from 'react-switch';
+import moment from "moment-timezone";
+import Switch from "react-switch";
 
+import { notification } from "antd";
 
 import {
   DropdownMenu,
@@ -25,7 +26,6 @@ import {
   BlockHeadContent,
   BlockTitle,
   Icon,
-  Row,
   Col,
   UserAvatar,
   PaginationComponent,
@@ -38,21 +38,35 @@ import {
   TooltipComponent,
   RSelect,
 } from "../../../src/components/Component";
-import { filterRole, filterStatus, userData } from "../../pages/pre-built/user-manage/UserData";
+import {
+  filterRole,
+  filterStatus,
+  userData,
+} from "../../pages/pre-built/user-manage/UserData";
 import { bulkActionOptions, findUpper } from "../../../src/utils/Utils";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { UserContext } from "../../context/UserContext";
 import { AuthContext } from "../../context/AuthContext";
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, Typography } from "@mui/material";
 const UserListRegularPage = () => {
-  const { contextData, addUser, getUser, updateUser, getGroupsDropdown } = useContext(UserContext);
+  const {
+    contextData,
+    addUser,
+    getUser,
+    updateUser,
+    getGroupsDropdown,
+    deleteUser,
+    blockUser,
+  } = useContext(UserContext);
   const { setAuthToken } = useContext(AuthContext);
-  console.log("contextData ", contextData)
+  console.log("contextData ", contextData);
   const [userData, setUserData] = contextData;
 
   const [sm, updateSm] = useState(false);
+
   const [tablesm, updateTableSm] = useState(false);
   const [onSearch, setonSearch] = useState(true);
   const [onSearchText, setSearchText] = useState("");
@@ -65,6 +79,19 @@ const UserListRegularPage = () => {
     // Your logic to update the status based on the id and checked value
   }
   const [editId, setEditedId] = useState();
+  const [deleteId, setDeleteId] = useState(false);
+  const [blockId, setBlockId] = useState(false);
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const [formData, setFormData] = useState({
     userValidity: "",
     display_name: "",
@@ -73,7 +100,7 @@ const UserListRegularPage = () => {
     add_group: "",
     user_role: "",
     max_quota: "",
-    password: ""
+    password: "",
   });
   const [actionText, setActionText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -81,23 +108,20 @@ const UserListRegularPage = () => {
   const [totalUsers, setTotalUsers] = useState(1);
   const [sort, setSortState] = useState("");
   const [statusDropdown, setStatusDropDown] = useState([
-    { value: 'en', label: 'English' },
-    { value: 'es', label: 'Spanish' },
-    { value: 'fr', label: 'French' },
+    { value: "en", label: "English" },
+    { value: "es", label: "Spanish" },
+    { value: "fr", label: "French" },
   ]);
   const [roleDropdown, setRolewDropDown] = useState([
     { value: "Agent", label: "Agent" },
-    { value: "Admin", label: "Admin" }
+    { value: "Admin", label: "Admin" },
   ]);
 
   const [groupsDropdown, setGroupsDropdown] = useState([]);
 
-
-
-
   const timezones = moment.tz.names().map((zone) => ({
     value: zone,
-    label: `(UTC${moment.tz(zone).format('Z')}) ${zone}`,
+    label: `(UTC${moment.tz(zone).format("Z")}) ${zone}`,
   }));
 
   const sortFunc = (params) => {
@@ -113,23 +137,19 @@ const UserListRegularPage = () => {
 
   // unselects the userData on mount
   const getRolesDropdown = () => {
-    getGroupsDropdown({},
-      
+    getGroupsDropdown(
+      {},
+
       (apiRes) => {
-        console.log(" get user apiRes apiRes===============================================", apiRes);
+        // console.log(" get user apiRes apiRes===============================================", apiRes);
         // const { data: { data :{data}},status, token }  = apiRes;
-        const data = apiRes.data
-        const code = apiRes.status
-        const message = apiRes.data.message
+        const data = apiRes.data;
+        const code = apiRes.status;
+        const message = apiRes.data.message;
         // console.log(" get user apiRes data", data);
-        console.log(" get user apiRes message", message);
+        // console.log(" get user apiRes message", message);
         // console.log(" get user apiRes token", token);
-        console.log(" get user apiRes code", code);
-        [
-          { value: 'en', label: 'English' },
-          { value: 'es', label: 'Spanish' },
-          { value: 'fr', label: 'French' },
-        ]
+
         setGroupsDropdown(
           data.groups.map((gro) => ({
             label: gro.group_name,
@@ -140,15 +160,18 @@ const UserListRegularPage = () => {
         // setAuthToken(token);
       },
       (apiErr) => {
-        console.log(" get user apiErr ", apiErr)
-      })
+        console.log(" get user apiErr ", apiErr);
+      }
+    );
   };
 
+  useEffect(() => {
+    getUsers();
+  }, [deleteId]);
 
   useEffect(() => {
-    debugger
-    getRolesDropdown()
-  }, [])
+    getRolesDropdown();
+  }, []);
   useEffect(() => {
     let newData;
     newData = userData.map((item) => {
@@ -158,27 +181,25 @@ const UserListRegularPage = () => {
     setUserData([...newData]);
   }, []);
 
-
-
   useEffect(() => {
     getUsers();
   }, [currentPage]);
 
-
   const getUsers = () => {
-    getUser({ pageNumber: currentPage, pageSize: itemPerPage, search: onSearchText },
+    getUser(
+      { pageNumber: currentPage, pageSize: itemPerPage, search: onSearchText },
       (apiRes) => {
         console.log(" get user apiRes apiRes", apiRes);
         // const { data: { data :{data}},status, token }  = apiRes;
-        const data = apiRes.data.data
-        const code = apiRes.status
-        const message = apiRes.data.message
-        const count = apiRes.data.count
+        const data = apiRes.data.data;
+        const code = apiRes.status;
+        const message = apiRes.data.message;
+        const count = apiRes.data.count;
         console.log(" get user apiRes data", data);
         console.log(" get user apiRes message", message);
         // console.log(" get user apiRes token", token);
         console.log(" get user apiRes code", code);
-        setTotalUsers(count)
+        setTotalUsers(count);
 
         if (code == 200) {
           setUserData(data);
@@ -186,15 +207,16 @@ const UserListRegularPage = () => {
         // setAuthToken(token);
       },
       (apiErr) => {
-        console.log(" get user apiErr ", apiErr)
-      })
+        console.log(" get user apiErr ", apiErr);
+      }
+    );
   };
 
-  const [timezone, setTimezone] = useState('');
-  const timezoneOptions = Intl.DateTimeFormat().resolvedOptions().timeZone
-    .split('/')
+  const [timezone, setTimezone] = useState("");
+  const timezoneOptions = Intl.DateTimeFormat()
+    .resolvedOptions()
+    .timeZone.split("/")
     .map((zone) => ({ value: zone, label: zone }));
-
 
   useEffect(() => {
     if (onSearchText !== "") {
@@ -238,9 +260,9 @@ const UserListRegularPage = () => {
       add_group: "",
       user_role: "",
       max_quota: "",
-      password: ""
+      password: "",
     });
-    setEditedId(0)
+    setEditedId(0);
   };
 
   // function to close the form modal
@@ -251,9 +273,9 @@ const UserListRegularPage = () => {
 
   // submit function to add a new item
   const onFormSubmit = () => {
-    debugger
+    debugger;
     // console.log("user submitData ", submitData)
-    console.log("user formData ", formData)
+    console.log("user formData ", formData);
     // const { name, email, phone } = submitData;
     if (editId) {
       let submittedData = {
@@ -265,14 +287,15 @@ const UserListRegularPage = () => {
         add_group: formData.add_group,
         user_role: formData.user_role,
         max_quota: formData.max_quota,
-        password: formData.password
+        password: formData.password,
       };
       // setUserData([submittedData, ...userData]);
 
-      addUser(submittedData,
+      addUser(
+        submittedData,
         (apiRes) => {
           console.log(apiRes);
-          const code = 200
+          const code = 200;
           // const { data: { data: { data, total }, meta: { code, message }, token } } = apiRes;
           // console.log(" add user apiRes data", data);
           // console.log(" add user apiRes message", message);
@@ -282,13 +305,13 @@ const UserListRegularPage = () => {
             resetForm();
             setModal({ edit: false }, { add: false });
             getUsers();
-
           }
           setAuthToken(token);
         },
         (apiErr) => {
-          console.log(" add user apiErr ", apiErr)
-        });
+          console.log(" add user apiErr ", apiErr);
+        }
+      );
     } else {
       let submittedData = {
         userValidity: formData.userValidity,
@@ -298,13 +321,13 @@ const UserListRegularPage = () => {
         add_group: formData.add_group,
         user_role: formData.user_role,
         max_quota: formData.max_quota,
-        password: formData.password
-
+        password: formData.password,
       };
-      addUser(submittedData,
+      addUser(
+        submittedData,
         (apiRes) => {
           console.log(apiRes);
-          const code = 200
+          const code = 200;
           // const { data: { data: { data, total }, meta: { code, message }, token } } = apiRes;
           // console.log(" add user apiRes data", data);
           // console.log(" add user apiRes message", message);
@@ -314,63 +337,23 @@ const UserListRegularPage = () => {
             resetForm();
             setModal({ edit: false }, { add: false });
             getUsers();
-
-
           }
           setAuthToken(token);
         },
         (apiErr) => {
-          console.log(" add user apiErr ", apiErr)
-        });
+          console.log(" add user apiErr ", apiErr);
+        }
+      );
       // setUserData([submittedData, ...userData]);
     }
 
     // }
-
   };
-
-  // submit function to update a new item
-  // const onEditSubmit = (submitData) => {
-  //   debugger
-  //   console.log(submitData);
-  //   const { display_name, email, emp_code, add_group, user_role } = submitData;
-  //   let submittedData;
-  //   let newitems = userData;
-  //   newitems.forEach((item) => {
-  //     if (item.id === editId) {
-  //       console.log("2799999", editId);
-  //       submittedData = {
-  //         id: item.id,
-  //         avatarBg: item.avatarBg,
-  //         display_name: display_name,
-  //         user_role: user_role,
-  //         max_quota: max_quota,
-  //         add_group: add_group,
-  //         image: item.image,
-  //         role: item.role,
-  //         email: email,
-  //         balance: formData.balance,
-  //         emp_code: emp_code,
-  //         emailStatus: item.emailStatus,
-  //         kycStatus: item.kycStatus,
-  //         lastLogin: item.lastLogin,
-  //         status: formData.status,
-  //         country: item.country,
-  //       };
-  //     }
-  //   });
-  //   let index = newitems.findIndex((item) => item.id === editId);
-
-  //   newitems[index] = submittedData;
-  //   console.log(submittedData);
-  //   setModal({ edit: false });
-  //   resetForm();
-  // };
 
   // function that loads the want to editted userData
   const onEditClick = (id) => {
-    console.log("id........", id)
-    console.log("userData........", userData)
+    console.log("id........", id);
+    console.log("userData........", userData);
     userData.map((item) => {
       if (item.id == id) {
         console.log(item, "sds");
@@ -383,20 +366,86 @@ const UserListRegularPage = () => {
           add_group: item.add_group,
           emp_code: item.emp_code,
           email: item.email,
-          password: item.password
+          password: item.password,
           // role: item.user_role,
           // status: item.status
         });
 
-
         setModal({ edit: false, add: true });
         setEditedId(id);
       }
-
     });
   };
 
+  const onDeleteClick = (id) => {
+    notification["warning"]({
+      placement: "bottomRight",
+      description: "",
+      message: "User Deleted",
+    });
+    setDeleteId(true);
+    console.log("id........", id);
+    console.log("userData........", userData);
+    let deleteId = { id: id };
+    deleteUser(
+      deleteId,
+      (apiRes) => {
+        console.log(apiRes);
+        const code = 200;
+        // const { data: { data: { data, total }, meta: { code, message }, token } } = apiRes;
+        // console.log(" add user apiRes data", data);
+        // console.log(" add user apiRes message", message);
+        // console.log(" add user apiRes token", token);
+        if (code == 200) {
+          console.log("260");
+          resetForm();
+          setModal({ edit: false }, { add: false });
+          getUsers();
+        }
+        setAuthToken(token);
+      },
+      (apiErr) => {
+        console.log(" add user apiErr ", apiErr);
+      }
+    );
+  };
 
+  const onBlockClick = (id) => {
+    notification["warning"]({
+      placement: "bottomRight",
+      description: "",
+      message: "User Blocked",
+    });
+    setBlockId(true);
+    console.log("id........", id);
+    console.log("userData........", userData);
+    let blockId = { id: id };
+    blockUser(
+      blockId,
+      (apiRes) => {
+        console.log(apiRes);
+        const code = 200;
+        // const { data: { data: { data, total }, meta: { code, message }, token } } = apiRes;
+        // console.log(" add user apiRes data", data);
+        // console.log(" add user apiRes message", message);
+        // console.log(" add user apiRes token", token);
+        if (code == 200) {
+          console.log("260");
+          resetForm();
+          setModal({ edit: false }, { add: false });
+          getUsers();
+        }
+        setAuthToken(token);
+      },
+      (apiErr) => {
+        console.log(" add user apiErr ", apiErr);
+      }
+    );
+  };
+
+  useEffect(() => {
+    // onBlockClick()
+  }, [blockId]);
   // function to change to suspend property for an item
   const suspendUser = (id) => {
     let newData = userData;
@@ -440,15 +489,13 @@ const UserListRegularPage = () => {
 
   // Change Page
   const paginate = (pageNumber) => {
-    debugger
+    debugger;
     console.log(pageNumber);
-    setCurrentPage(pageNumber)
-
+    setCurrentPage(pageNumber);
   };
 
-  const { errors, register, handleSubmit, watch, triggerValidation } = useForm();
-
-
+  const { errors, register, handleSubmit, watch, triggerValidation } =
+    useForm();
 
   // useEffect(() => {
   //   if (watch("password")) {
@@ -460,84 +507,61 @@ const UserListRegularPage = () => {
     <React.Fragment>
       <Head title="User List - Regular"></Head>
       <Content>
-        <BlockHead size="sm">
-          <BlockBetween>
-            <BlockHeadContent>
-              <BlockTitle tag="h3" page>
-                Users Lists
-              </BlockTitle>
-              <BlockDes className="text-soft">
-                <p>You have total {totalUsers} users.</p>
-              </BlockDes>
-            </BlockHeadContent>
-            <BlockHeadContent>
-              <div className="toggle-wrap nk-block-tools-toggle">
-                <Button
-                  className={`btn-icon btn-trigger toggle-expand mr-n1 ${sm ? "active" : ""}`}
-                  onClick={() => updateSm(!sm)}
-                >
-                  <Icon name="menu-alt-r"></Icon>
-                </Button>
-                <div className="toggle-expand-content" style={{ display: sm ? "block" : "none" }}>
-                  <ul className="nk-block-tools g-3">
-                    {/* <li>
+        <Stack style={{ marginTop: "-19px" }}>
+          <BlockHead size="sm">
+            <BlockBetween>
+              <BlockHeadContent>
+                <Typography style={{ fontSize: "24.5px", fontWeight: "bold" }}>
+                  Users Lists
+                </Typography>
+                <BlockDes className="text-soft">
+                  <p>You have total {totalUsers} users.</p>
+                </BlockDes>
+              </BlockHeadContent>
+              <BlockHeadContent>
+                <div className="toggle-wrap nk-block-tools-toggle">
+                  <Button
+                    className={`btn-icon btn-trigger toggle-expand mr-n1 ${
+                      sm ? "active" : ""
+                    }`}
+                    onClick={() => updateSm(!sm)}
+                  >
+                    <Icon name="menu-alt-r"></Icon>
+                  </Button>
+                  <div
+                    className="toggle-expand-content"
+                    style={{ display: sm ? "block" : "none" }}
+                  >
+                    <ul className="nk-block-tools g-3">
+                      {/* <li>
                       <Button color="light" outline className="btn-white">
                         <Icon name="download-cloud"></Icon>
                         <span>Export</span>
                       </Button>
                     </li> */}
-                    <li className="nk-block-tools-opt">
-                      <Button color="primary" className="btn-icon" onClick={() => setModal({ add: true })}>
-                        <Icon name="plus"></Icon>
-                      </Button>
-                    </li>
-                  </ul>
+                      <li className="nk-block-tools-opt">
+                        <Button
+                          color="primary"
+                          className="btn-icon"
+                          onClick={() => setModal({ add: true })}
+                        >
+                          <Icon name="plus"></Icon>
+                        </Button>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
-              </div>
-            </BlockHeadContent>
-          </BlockBetween>
-        </BlockHead>
-
+              </BlockHeadContent>
+            </BlockBetween>
+          </BlockHead>
+        </Stack>
         <Block>
           <DataTable className="card-stretch">
-            <div className="card-inner position-relative card-tools-toggle">
+            <div
+              className="card-inner position-relative card-tools-toggle"
+              style={{ height: "2px" }}
+            >
               <div className="card-title-group">
-                {/* <div className="card-tools">
-                  <div className="form-inline flex-nowrap gx-3">
-                    <div className="form-wrap">
-                      <RSelect
-                        options={bulkActionOptions}
-                        className="w-130px"
-                        placeholder="Bulk Action"
-                        onChange={(e) => onActionText(e)}
-                      />
-                    </div>
-                    <div className="btn-wrap">
-                      <span className="d-none d-md-block">
-                        <Button
-                          disabled={actionText !== "" ? false : true}
-                          color="light"
-                          outline
-                          className="btn-dim"
-                          onClick={(e) => onActionClick(e)}
-                        >
-                          Apply
-                        </Button>
-                      </span>
-                      <span className="d-md-none">
-                        <Button
-                          color="light"
-                          outline
-                          disabled={actionText !== "" ? false : true}
-                          className="btn-dim btn-icon"
-                          onClick={(e) => onActionClick(e)}
-                        >
-                          <Icon name="arrow-right"></Icon>
-                        </Button>
-                      </span>
-                    </div>
-                  </div>
-                </div> */}
                 <div className="card-tools mr-n1">
                   <ul className="btn-toolbar gx-1">
                     <li>
@@ -549,7 +573,10 @@ const UserListRegularPage = () => {
                         }}
                         className="btn btn-icon search-toggle toggle-search"
                       >
-                        <Icon name="search"></Icon>
+                        <Icon
+                          name="search"
+                          style={{ marginTop: "-25px" }}
+                        ></Icon>
                       </a>
                     </li>
                     {/* <li className="btn-toolbar-sep"></li> */}
@@ -561,10 +588,17 @@ const UserListRegularPage = () => {
                         >
                           <Icon name="menu-right"></Icon>
                         </Button> */}
-                        <div className={`toggle-content ${tablesm ? "content-active" : ""}`}>
+                        <div
+                          className={`toggle-content ${
+                            tablesm ? "content-active" : ""
+                          }`}
+                        >
                           <ul className="btn-toolbar gx-1">
                             <li className="toggle-close">
-                              <Button className="btn-icon btn-trigger toggle" onClick={() => updateTableSm(false)}>
+                              <Button
+                                className="btn-icon btn-trigger toggle"
+                                onClick={() => updateTableSm(false)}
+                              >
                                 <Icon name="arrow-left"></Icon>
                               </Button>
                             </li>
@@ -575,7 +609,9 @@ const UserListRegularPage = () => {
                   </ul>
                 </div>
               </div>
-              <div className={`card-search search-wrap ${!onSearch && "active"}`}>
+              <div
+                className={`card-search search-wrap ${!onSearch && "active"}`}
+              >
                 <div className="card-body">
                   <div className="search-content">
                     <Button
@@ -604,105 +640,140 @@ const UserListRegularPage = () => {
             <DataTableBody>
               <DataTableHead>
                 <DataTableRow>
-                  <span className="sub-text">Display Name</span>
+                  <span className="sub-text" style={{ fontWeight: "bold" }}>
+                    Display Name
+                  </span>
                 </DataTableRow>
                 <DataTableRow size="md">
-                  <span className="sub-text">Email</span>
+                  <span className="sub-text" style={{ fontWeight: "bold" }}>
+                    Email
+                  </span>
                 </DataTableRow>
                 <DataTableRow size="md">
-                  <span className="sub-text">Employee Code</span>
+                  <span className="sub-text" style={{ fontWeight: "bold" }}>
+                    Employee Code
+                  </span>
                 </DataTableRow>
                 <DataTableRow size="lg">
-                  <span className="sub-text">Max Quota</span>
+                  <span className="sub-text" style={{ fontWeight: "bold" }}>
+                    Max Quota
+                  </span>
                 </DataTableRow>
                 <DataTableRow size="lg">
-                  <span className="sub-text"> User Role</span>
+                  <span className="sub-text" style={{ fontWeight: "bold" }}>
+                    {" "}
+                    User Role
+                  </span>
                 </DataTableRow>
                 {/* <DataTableRow size="md">
                   <span className="sub-text">Status</span>
                 </DataTableRow> */}
                 {/* <DataTableRow className="nk-tb-col-tools text-right"> */}
-                <DataTableRow size="md">
-                  <span className="sub-text">Action</span>
+                <DataTableRow size="lg">
+                  <span
+                    className="sub-text"
+                    style={{ marginLeft: "30px", fontWeight: "bold" }}
+                  >
+                    Action
+                  </span>
                 </DataTableRow>
               </DataTableHead>
 
               {userData.length > 0
                 ? userData.map((item) => {
-                  return (
-                    <DataTableItem key={item.user_id}>
+                    return (
+                      <DataTableItem key={item.user_id}>
+                        <DataTableRow size="md" style={{ innerHeight: "10px" }}>
+                          <span>{item.display_name}</span>
+                        </DataTableRow>
+                        <DataTableRow size="md">
+                          <span>{item.email}</span>
+                        </DataTableRow>
+                        <DataTableRow size="md">
+                          <span>{item.emp_code}</span>
+                        </DataTableRow>
+                        <DataTableRow size="md">
+                          <span>{item.max_quota}</span>
+                        </DataTableRow>
+                        <DataTableRow size="md">
+                          <span>{item.user_role}</span>
+                        </DataTableRow>
 
-                      {/* <DataTableRow> */}
-                      {/* <Link to={`${process.env.PUBLIC_URL}/user-details-regular/${item.user_id}`}> */}
-                      {/* <div className="user-card"> */}
-                      {/* <UserAvatar
-                            theme={item.avatarBg}
-                            // text={findUpper(item.user_name)}
-                            image={item.image}
-                          ></UserAvatar> */}
-                      {/* <div className="user-info">
-                            <span className="tb-lead">
-                              {item.user_name}{" "}
-                              <span
-                                className={`dot dot-${item.user_status === "Active"
-                                  ? "success"
-                                  : "danger"
-                                  } d-md-none ml-1`}
-                              ></span>
-                            </span>
-                            <span>{item.user_email}</span>
-                          </div> */}
-                      {/* </div> */}
-                      {/* </Link> */}
-                      {/* </DataTableRow> */}
-                      {/* <DataTableRow size="mb">
-                          <span className="tb-amount">
-                            {item.balance} <span className="currency">USD</span>
-                          </span>
-                        </DataTableRow> */}
-                      <DataTableRow size="md" style={{ innerHeight: "10px" }} >
-                        <span>{item.display_name}</span>
-                      </DataTableRow>
-
-                      <DataTableRow size="lg">
-                        <ul className="list-status">
-                          <li>
-                            <Icon
-                              className={`text-success}`}
-                              name={`${"check-circle"}`}
-                            ></Icon>{" "}
-                            <span
-                              className={`tb-status text-${item.user_status === "Active" ? "success" : "danger"
-                                }`}
+                        <DataTableRow className="nk-tb-col-tools">
+                          <ul className="nk-tb-actions">
+                            <li
+                              className=""
+                              onClick={() => onEditClick(item.id)}
                             >
-                              {item.email}
-                            </span>
-                          </li>
+                              <TooltipComponent
+                                tag="a"
+                                containerClassName="btn btn-trigger btn-icon"
+                                id={"edit" + item.id}
+                                icon="edit-alt-fill"
+                                direction="top"
+                                text="Edit"
+                                style={{
+                                  backgroundColor: "transparent",
+                                  boxShadow: "none",
+                                  color: "inherit",
+                                }}
+                              />
+                              &nbsp;&nbsp;
+                            </li>
 
-                        </ul>
-                      </DataTableRow>
-                      <DataTableRow size="md">
-                        <span>{item.emp_code}</span>
-                      </DataTableRow>
-                      <DataTableRow size="md">
-                        <span>{item.max_quota}</span>
-                      </DataTableRow>
-                      <DataTableRow size="md">
-                        <span>{item.user_role}</span>
-                      </DataTableRow>
+                            <li
+                              className=""
+                              // onClick={() => onDeleteClick(item.id)}
+                              onClick={handleClickOpen}
 
-                      {/* <DataTableRow size="lg">
-                        <span>{new Date(item.updated_at).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })}</span>
-                      </DataTableRow> */}
+                            >
+                              <TooltipComponent
+                                tag="a"
+                                containerClassName="btn btn-trigger btn-icon"
+                                id={"edit" + item.id}
+                                icon="icon ni ni-trash-alt"
+                                direction="top"
+                                text="Edit"
+                                style={{
+                                  backgroundColor: "transparent",
+                                  boxShadow: "none",
+                                  color: "inherit",
+                                }}
+                              />
+                              &nbsp;&nbsp;
+                            </li>
 
-                      <DataTableRow className="nk-tb-col-tools">
-                        <ul className="nk-tb-actions gx-1">
-                          <li className="" onClick={() => onEditClick(item.id)}>
+                            <div>
+                            
+                              <Dialog
+                                open={open}
+                                onClose={handleClose}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                                style={{backgroundColor: "transparent"}}
+
+
+                              >
+                                <DialogTitle id="alert-dialog-title">
+                                  {"User Delete?Are You Sure!"}
+                                </DialogTitle>
+                             
+                                <DialogActions>
+                                  <Button onClick={handleClose}>
+                                    No
+                                  </Button>
+                                  <Button onClick={handleClose} autoFocus>
+                                    Yes
+                                  </Button>
+                                </DialogActions>
+                              </Dialog>
+                            </div>
+                            {/* <li className="" onClick={() => onBlockClick(item.id)}>
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
                               id={"edit" + item.id}
-                              icon="edit-alt-fill"
+                              icon="icon ni ni-stop-circle-fill"
                               direction="top"
                               text="Edit"
                               style={{ backgroundColor: "transparent", boxShadow: "none", color: "inherit" }}
@@ -710,41 +781,28 @@ const UserListRegularPage = () => {
                             />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 
-                          </li>
-
-                          <li className="" onClick={() => onEditClick(item.id)}>
-                            <TooltipComponent
-                              tag="a"
-                              containerClassName="btn btn-trigger btn-icon"
-                              id={"edit" + item.id}
-                              icon="block-alt-fill"
-                              direction="top"
-                              text="Edit"
-                              style={{ backgroundColor: "transparent", boxShadow: "none", color: "inherit" }}
-
-                            />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-
-                          </li>
-
-                          <Switch
-
-                            onChange={(checked) => handleStatusToggle(item.id, checked)}
-                            checked={item.user_status === "Active"}
-                            checkedIcon={false}
-                            uncheckedIcon={false}
-                            onColor="#28a745"
-                            offColor="#dc3545"
-                            height={20}
-                            width={36}
-                            handleDiameter={14}
-
-                          />
-                        </ul>
-                      </DataTableRow>
-                    </DataTableItem>
-                  );
-                })
+                          </li> */}
+                            <li>
+                              <Switch
+                                onChange={(checked) =>
+                                  handleStatusToggle(item.id, checked)
+                                }
+                                checked={item.user_status === "Active"}
+                                checkedIcon={false}
+                                uncheckedIcon={false}
+                                onColor="#28a745"
+                                offColor="#3B3B3B"
+                                height={17}
+                                width={30}
+                                handleDiameter={14}
+                                // style={{marginTop:"10px"}}
+                              />
+                            </li>
+                          </ul>
+                        </DataTableRow>
+                      </DataTableItem>
+                    );
+                  })
                 : null}
             </DataTableBody>
             <div className="card-inner">
@@ -767,7 +825,13 @@ const UserListRegularPage = () => {
             </div>
           </DataTable>
         </Block>
-        <Modal isOpen={modal.add} toggle={() => setModal({ add: true })} className="modal-dialog-centered" size="lg">
+
+        <Modal
+          isOpen={modal.add}
+          toggle={() => setModal({ add: true })}
+          className="modal-dialog-centered"
+          size="lg"
+        >
           <ModalBody>
             <a
               href="#close"
@@ -780,11 +844,13 @@ const UserListRegularPage = () => {
               <Icon name="cross-sm"></Icon>
             </a>
             <div className="p-2">
-              <h5 className="title">
-                {editId ? "Update User" : "Add User"}
-              </h5>
+              <h5 className="title">{editId ? "Update User" : "Add User"}</h5>
               <div className="mt-4">
-                <Form className="row gy-4" noValidate onSubmit={handleSubmit(onFormSubmit)}>
+                <Form
+                  className="row gy-4"
+                  noValidate
+                  onSubmit={handleSubmit(onFormSubmit)}
+                >
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Display Name</label>
@@ -793,11 +859,20 @@ const UserListRegularPage = () => {
                         type="text"
                         name="display_name"
                         defaultValue={formData.display_name}
-                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            [e.target.name]: e.target.value,
+                          })
+                        }
                         placeholder="Enter display_name"
                         ref={register({ required: "This field is required" })}
                       />
-                      {errors.display_name && <span className="invalid">{errors.display_name.message}</span>}
+                      {errors.display_name && (
+                        <span className="invalid">
+                          {errors.display_name.message}
+                        </span>
+                      )}
                     </FormGroup>
                   </Col>
                   <Col md="6">
@@ -808,11 +883,20 @@ const UserListRegularPage = () => {
                         type="text"
                         name="max_quota"
                         defaultValue={formData.max_quota}
-                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            [e.target.name]: e.target.value,
+                          })
+                        }
                         placeholder="Enter Quota"
                         ref={register({ required: "This field is required" })}
                       />
-                      {errors.max_quota && <span className="invalid">{errors.max_quota.message}</span>}
+                      {errors.max_quota && (
+                        <span className="invalid">
+                          {errors.max_quota.message}
+                        </span>
+                      )}
                     </FormGroup>
                   </Col>
                   <Col md="6">
@@ -823,11 +907,20 @@ const UserListRegularPage = () => {
                         type="text"
                         name="user_role"
                         defaultValue={formData.user_role}
-                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            [e.target.name]: e.target.value,
+                          })
+                        }
                         placeholder="Enter User Role"
                         ref={register({ required: "This field is required" })}
                       />
-                      {errors.user_role && <span className="invalid">{errors.user_role.message}</span>}
+                      {errors.user_role && (
+                        <span className="invalid">
+                          {errors.user_role.message}
+                        </span>
+                      )}
                     </FormGroup>
                   </Col>
                   <Col md="6">
@@ -840,14 +933,22 @@ const UserListRegularPage = () => {
                         ref={register({ required: "This field is required" })}
                         minLength={10}
                         maxLength={10}
-                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            [e.target.name]: e.target.value,
+                          })
+                        }
                         placeholder="Enter Employee Code"
                         required
                       />
-                      {errors.emp_code && <span className="invalid">{errors.emp_code.message}</span>}
+                      {errors.emp_code && (
+                        <span className="invalid">
+                          {errors.emp_code.message}
+                        </span>
+                      )}
                     </FormGroup>
                   </Col>
-
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Password</label>
@@ -856,16 +957,23 @@ const UserListRegularPage = () => {
                         type="text"
                         name="password"
                         defaultValue={formData.password}
-                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            [e.target.name]: e.target.value,
+                          })
+                        }
                         // ref={register({ required: "This field is required" })}
                         placeholder="Enter Password"
-                        ref={register({ required: 'This field is required' })}
+                        ref={register({ required: "This field is required" })}
                       />
-                      {errors.password && <span className="invalid">{errors.password.message}</span>}
+                      {errors.password && (
+                        <span className="invalid">
+                          {errors.password.message}
+                        </span>
+                      )}
                     </FormGroup>
                   </Col>
-
-
                   <Col md="6">
                     <FormGroup>
                       <label className="form-label">Confirm Password</label>
@@ -874,19 +982,27 @@ const UserListRegularPage = () => {
                         type="password"
                         name="confirmPassword"
                         defaultValue=""
-                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            [e.target.name]: e.target.value,
+                          })
+                        }
                         placeholder="Confirm Password"
                         ref={register({
-                          required: 'This field is required',
-                          validate: (value) => value === watch('password') || "Passwords don't match"
+                          required: "This field is required",
+                          validate: (value) =>
+                            value === watch("password") ||
+                            "Passwords don't match",
                         })}
                       />
-                      {errors.confirmPassword && <span className="invalid">{errors.confirmPassword.message}</span>}
+                      {errors.confirmPassword && (
+                        <span className="invalid">
+                          {errors.confirmPassword.message}
+                        </span>
+                      )}
                     </FormGroup>
                   </Col>
-
-
-
                   <Col md="12">
                     <FormGroup>
                       <label className="form-label">Email</label>
@@ -895,23 +1011,34 @@ const UserListRegularPage = () => {
                         type="text"
                         name="email"
                         defaultValue={formData.email}
-                        onChange={(e) => setFormData({ ...formData, [e.target.name]: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            [e.target.name]: e.target.value,
+                          })
+                        }
                         // ref={register({ required: "This field is required" })}
                         placeholder="Enter Email"
                       />
-                      {errors.email && <span className="invalid">{errors.email.message}</span>}
+                      {errors.email && (
+                        <span className="invalid">{errors.email.message}</span>
+                      )}
                     </FormGroup>
                   </Col>
-
                   <Col md="12">
                     <FormGroup>
-
                       <label className="form-label">Add to Groups</label>
                       <RSelect
                         options={groupsDropdown}
                         name="add_group"
                         defaultValue="Please Select Groups"
-                        onChange={(e) => setFormData({ ...formData, add_group: e.label, [e.label]: e.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            add_group: e.label,
+                            [e.label]: e.value,
+                          })
+                        }
                       />
                       {/* <input
                         className="form-control"
@@ -922,20 +1049,23 @@ const UserListRegularPage = () => {
                         // ref={register({ required: "This field is required" })}
                         placeholder="Add Group"
                       /> */}
-                      {errors.add_group && <span className="invalid">{errors.add_group.message}</span>}
+                      {errors.add_group && (
+                        <span className="invalid">
+                          {errors.add_group.message}
+                        </span>
+                      )}
                     </FormGroup>
                   </Col>
-
-
-                  <Col md="6"  >
+                  <Col md="6">
                     <FormGroup label="Validity" className="form-label">
                       <label className="form-label">Validity</label>
 
                       <DatePicker
                         name="userValidity"
-
                         selected={formData.userValidity}
-                        onChange={(e) => setFormData({ ...formData, userValidity: e })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, userValidity: e })
+                        }
                         dateFormat="dd/MM/yyyy"
                         placeholderText="Select Validity"
                         showYearDropdown
@@ -946,7 +1076,6 @@ const UserListRegularPage = () => {
                       {/* {errors.confirmPassword && <span className="invalid">{errors.confirmPassword.message}</span>} */}
                     </FormGroup>
                   </Col>
-
                   {/* <Col md="6">
                     <FormGroup>
                       <label className="form-label">Language</label>
@@ -972,17 +1101,11 @@ const UserListRegularPage = () => {
                         />
                       </div>
                     </FormGroup> */}
-
-
-
-
-                  <Col size="12" >
+                  <Col size="12">
                     <ul className="align-center flex-wrap flex-sm-nowrap gx-4 gy-2">
                       <li>
-                        <Button color="primary" size="md" type="submit"
-                        >
+                        <Button color="primary" size="md" type="submit">
                           {editId ? "Update User" : "Add User"}
-
                         </Button>
                       </li>
                       <li>
@@ -1005,7 +1128,12 @@ const UserListRegularPage = () => {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={modal.edit} toggle={() => setModal({ edit: false })} className="modal-dialog-centered" size="lg">
+        <Modal
+          isOpen={modal.edit}
+          toggle={() => setModal({ edit: false })}
+          className="modal-dialog-centered"
+          size="lg"
+        >
           <ModalBody>
             <a
               href="#cancel"

@@ -8,6 +8,19 @@
         "userDropdownU": "userdropdown",
         "dropdown_groups": "dropdown_groups",
         "getUsers": "get_user",
+        "getCabinet": "getcabinet",
+        "add_cabinet": "add_cabinet",
+        "deleteuser": "deleteuser",
+        "blockuser": "blockuser",
+        "getworkspace":"getworkspace",
+        "addWorkspace":"add_workspace",
+        "cabinetdropdown":"cabinetdropdown",
+        "addFolder":"folders",
+        "wauth":"wauth",
+        
+
+
+        
         "uploadFile": "/file/upload",
         "uploadByCustomer": "/file/uploadByCustomer",
         "addCustomer": "/customer/addCustomer",

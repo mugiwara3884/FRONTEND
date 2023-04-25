@@ -77,6 +77,10 @@ import UserProfileLayout from "../pages/pre-built/user-manage/UserProfileLayout"
 // import KycListRegular from "../pages/pre-built/kyc-list-regular/KycListRegular";
 import KycList from "../pages/ACME/KycList";
 import Groups from "../pages/ACME/Groups";
+import Cabinet from "../pages/ACME/Cabinet";
+import Workspace from "../pages/ACME/Workspace";
+import Workspacedata from "../pages/ACME/Workspace-data";
+
 
 import KycDetailsRegular from "../pages/pre-built/kyc-list-regular/kycDetailsRegular";
 import TransListBasic from "../pages/pre-built/trans-list/TransListBasic";
@@ -193,6 +197,9 @@ const Pages = () => {
         {/* <Route exact path={`${process.env.PUBLIC_URL}/kyc-list-regular`} component={KycListRegular}></Route> */}
         <Route exact path={`${process.env.PUBLIC_URL}/kyc-list`} component={KycList}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/groups`} component={Groups}></Route>
+        <Route exact path={`${process.env.PUBLIC_URL}/cabinet`} component={Cabinet}></Route>
+        <Route exact path={`${process.env.PUBLIC_URL}/workspace`} component={Workspace}></Route>
+        <Route exact path={`${process.env.PUBLIC_URL}/workspace-data`} component={Workspacedata}></Route>
 
         <Route exact path={`${process.env.PUBLIC_URL}/kyc-details-regular/:id`} component={KycDetailsRegular}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/transaction-basic`} component={TransListBasic}></Route>

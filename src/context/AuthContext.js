@@ -50,7 +50,7 @@ export const AuthContextProvider = (props) => {
           // link: "/user-list",
           subMenu: [
             {
-              icon: "whatsapp-round",
+              icon: "users",
               text: "Groups",
               active: false,
               link: "/groups"
@@ -63,12 +63,12 @@ export const AuthContextProvider = (props) => {
               active: false,
               link: "/user-list"
             },
-            {
-              icon: "users",
-              text: "Roles",
-              active: false,
-              link: "/groups"
-            },
+            // {
+            //   icon: "users",
+            //   text: "Roles",
+            //   active: false,
+            //   link: "/groups"
+            // },
           ],
         },
         
@@ -105,17 +105,23 @@ export const AuthContextProvider = (props) => {
               icon: "users",
               text: "Cabinet",
               active: false,
-              link: "/user-list"
+              link: "/cabinet"
             },
             {
               icon: "users",
               text: "Workspace",
               active: false,
-              link: "/user-list"
+              link: "/workspace"
             },
           ]
         },
         
+        {
+          icon:"users",
+          text:"My WorkSpace",
+          active:false,
+          link:"/workspace-data"
+        }
         // {
         //   icon: "file-docs",
         //   text: "Upload Documents",
@@ -156,13 +162,13 @@ export const AuthContextProvider = (props) => {
       })
   };
   async function verifyOTP(data, handleApiRes, handleApiError) {
-    console.log(data);
+    // console.log(data);
     await AxiosPost("verifyOTP", data,
       (apiRes) => {
-        console.log(apiRes);
+        // console.log(apiRes);
         handleApiRes(apiRes)
       }, (apiError) => {
-        console.log(apiError);
+        // console.log(apiError);
         handleApiError(apiError)
       })
   };
@@ -174,13 +180,13 @@ export const AuthContextProvider = (props) => {
       var base64Payload = token.split('.')[1];
       var payload = Buffer.from(base64Payload, 'base64');
       let finalUserPayload = JSON.parse(payload.toString());
-      console.log("finalUserPayload ", finalUserPayload);
+      // console.log("finalUserPayload ", finalUserPayload);
       return finalUserPayload;
     } else {
       return false;
     }
   };
-  console.log("isUserAuthrized :-> ", authToken ? "Authentiated User :)" : "UnAuthrized :(");
+  // console.log("isUserAuthrized :-> ", authToken ? "Authentiated User :)" : "UnAuthrized :(");
 
   return <AuthContext.Provider value={{
     userAuthContextData: [userDataFromToken, setUserData],
