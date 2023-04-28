@@ -114,6 +114,8 @@ import QuillPreview from "../pages/components/forms/rich-editor/QuillPreview";
 import TinymcePreview from "../pages/components/forms/rich-editor/TinymcePreview";
 import KnobPreview from "../pages/components/charts/KnobPreview";
 import { FileManagerContextProvider } from "../pages/app/file-manager/FileManagerContext";
+import Policys from "../pages/ACME/Policys";
+import WS1 from "../pages/ACME/WS1";
 
 const Pages = () => {
   useLayoutEffect(() => {
@@ -200,12 +202,14 @@ const Pages = () => {
         <Route exact path={`${process.env.PUBLIC_URL}/cabinet`} component={Cabinet}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/workspace`} component={Workspace}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/workspace-data`} component={Workspacedata}></Route>
-
+        <Route exact path={`${process.env.PUBLIC_URL}/policys`} component={Policys}></Route>
+        <Route exact path={`${process.env.PUBLIC_URL}/ws1`} component={WS1}></Route>
+            
         <Route exact path={`${process.env.PUBLIC_URL}/kyc-details-regular/:id`} component={KycDetailsRegular}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/transaction-basic`} component={TransListBasic}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/transaction-crypto`} component={TransListCrypto}></Route>
         <Route exact path={`${process.env.PUBLIC_URL}/product-list`} component={ProductList}></Route>
-
+        
         <Route // context api added
           exact
           path={`${process.env.PUBLIC_URL}/product-card`}

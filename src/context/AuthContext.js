@@ -27,12 +27,12 @@ export const AuthContextProvider = (props) => {
       const { userRole } = userDataFromToken;
       if (userRole == 'Admin') {
         setAuthMenu([
-          {
-          // icon: "dashlite",
-          // iconUrl: favicon,
-          // text: "Dashboard",
-          // link: "/",
-        },
+        //   {
+        //   icon: "dashlite",
+        //   iconUrl: favicon,
+        //   text: "Dashboard",
+        //   link: "/",
+        // },
         // {
         //   icon: "file-docs",
         //   text: "KYC List",
@@ -44,7 +44,7 @@ export const AuthContextProvider = (props) => {
         // },
         
         {
-          icon: "users",
+          icon: "covid",
           text: "Auth",
           active: false,
           // link: "/user-list",
@@ -58,7 +58,7 @@ export const AuthContextProvider = (props) => {
             {
               // <em class="icon ni ni-linux-server"></em>
               // <em class="icon ni ni-sign-mxr-alt"></em>
-              icon: "users",
+              icon: "user",
               text: "Users",
               active: false,
               link: "/user-list"
@@ -75,7 +75,7 @@ export const AuthContextProvider = (props) => {
 
         
         {
-          icon: "users",
+          icon: "policy",
           text: "Policies",//notepad type
           active: false,
           // link: "/user-list",
@@ -96,19 +96,19 @@ export const AuthContextProvider = (props) => {
         },
 
         {
-          icon: "users",//
+          icon: "google-wallet",//
           text: "Storage",//file cabinet
           active: false,
           link: "/user-list",
           subMenu:[
             {
-              icon: "users",
+              icon: "bag",
               text: "Cabinet",
               active: false,
               link: "/cabinet"
             },
             {
-              icon: "users",
+              icon: "activity-round",
               text: "Workspace",
               active: false,
               link: "/workspace"
@@ -117,10 +117,18 @@ export const AuthContextProvider = (props) => {
         },
         
         {
-          icon:"users",
+          icon:"network",
           text:"My WorkSpace",
           active:false,
-          link:"/workspace-data"
+          link:"/workspace-data",
+          subMenu:[
+            {
+              icon: "bag",
+              text: "WS1",
+              active: false,
+              link: "/ws1"
+            },
+          ]
         }
         // {
         //   icon: "file-docs",

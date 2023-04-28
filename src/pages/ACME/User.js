@@ -4,7 +4,7 @@ import Content from "../../layout/content/Content";
 // import Head from "../../../layout/head/Head";
 import Head from "../../layout/head/Head";
 import moment from "moment-timezone";
-import Switch from "react-switch";
+// import Switch from "react-switch";
 
 import { notification } from "antd";
 
@@ -50,7 +50,8 @@ import { UserContext } from "../../context/UserContext";
 import { AuthContext } from "../../context/AuthContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack, Typography } from "@mui/material";
+import { Stack, Typography, Switch } from "@mui/material";
+import ModalPop from "../../components/Modal";
 const UserListRegularPage = () => {
   const {
     contextData,
@@ -74,22 +75,41 @@ const UserListRegularPage = () => {
     edit: false,
     add: false,
   });
+  const [active, setActive] = useState({ user_status: "active" });
+  console.log(active, "90990909999");
 
-  function handleStatusToggle(id, checked) {
-    // Your logic to update the status based on the id and checked value
-  }
+  // function handleStatusToggle(id, checked) {
+  //   // Your logic to update the status based on the id and checked value
+  // }
+  const handleStatusToggle = (id, checked) => {
+    console.log("toggle work",id,checked);
+    // const updateStatus = { ...active };
+    // updateStatus.user_status = checked ? "active" : "inactive";
+    setActive("inactive");
+  };
   const [editId, setEditedId] = useState();
   const [deleteId, setDeleteId] = useState(false);
+  console.log("--------", deleteId);
   const [blockId, setBlockId] = useState(false);
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState({
+    status: false,
+    data: "",
+  });
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleClickOpen = (id) => {
+    console.log(id);
+    setOpen({
+      status: true,
+      data: id,
+    });
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setOpen({
+      status: false,
+      data: "",
+    });
   };
 
   const [formData, setFormData] = useState({
@@ -378,6 +398,7 @@ const UserListRegularPage = () => {
   };
 
   const onDeleteClick = (id) => {
+    handleClose();
     notification["warning"]({
       placement: "bottomRight",
       description: "",
@@ -505,6 +526,16 @@ const UserListRegularPage = () => {
 
   return (
     <React.Fragment>
+      {/* Modals */}
+      <ModalPop
+        open={open.status}
+        handleClose={handleClose}
+        handleOkay={onDeleteClick}
+        title="User Delete?Are You Sure!"
+        data={open.data}
+      />
+
+      {/* modal over */}
       <Head title="User List - Regular"></Head>
       <Content>
         <Stack style={{ marginTop: "-19px" }}>
@@ -723,9 +754,7 @@ const UserListRegularPage = () => {
 
                             <li
                               className=""
-                              // onClick={() => onDeleteClick(item.id)}
-                              onClick={handleClickOpen}
-
+                              onClick={() => handleClickOpen(item.id)}
                             >
                               <TooltipComponent
                                 tag="a"
@@ -743,31 +772,6 @@ const UserListRegularPage = () => {
                               &nbsp;&nbsp;
                             </li>
 
-                            <div>
-                            
-                              <Dialog
-                                open={open}
-                                onClose={handleClose}
-                                aria-labelledby="alert-dialog-title"
-                                aria-describedby="alert-dialog-description"
-                                style={{backgroundColor: "transparent"}}
-
-
-                              >
-                                <DialogTitle id="alert-dialog-title">
-                                  {"User Delete?Are You Sure!"}
-                                </DialogTitle>
-                             
-                                <DialogActions>
-                                  <Button onClick={handleClose}>
-                                    No
-                                  </Button>
-                                  <Button onClick={handleClose} autoFocus>
-                                    Yes
-                                  </Button>
-                                </DialogActions>
-                              </Dialog>
-                            </div>
                             {/* <li className="" onClick={() => onBlockClick(item.id)}>
                             <TooltipComponent
                               tag="a"
@@ -782,8 +786,8 @@ const UserListRegularPage = () => {
 
 
                           </li> */}
-                            <li>
-                              <Switch
+                            <li >
+                              {/* <Switch
                                 onChange={(checked) =>
                                   handleStatusToggle(item.id, checked)
                                 }
@@ -796,6 +800,13 @@ const UserListRegularPage = () => {
                                 width={30}
                                 handleDiameter={14}
                                 // style={{marginTop:"10px"}}
+                              /> */}
+                              <Switch
+                                defaultChecked
+                                size="small"
+                                onChange={(checked) =>
+                                  handleStatusToggle(item.id, checked)
+                                }
                               />
                             </li>
                           </ul>

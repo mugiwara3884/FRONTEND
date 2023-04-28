@@ -667,24 +667,24 @@ const Workspacedata = () => {
             <DataTableBody>
               <DataTableHead>
                 <DataTableRow>
-                  <span className="sub-text">Workspace Name</span>
+                  <span className="sub-text" style={{fontWeight:"bold"}}>Workspace Name</span>
                 </DataTableRow>
                 {/* <DataTableRow size="md">
                   <span className="sub-text">Path</span>
                 </DataTableRow> */}
                 <DataTableRow size="lg">
-                  <span className="sub-text">Selected Groups</span>
+                  <span className="sub-text" style={{fontWeight:"bold"}}>Selected Groups</span>
                 </DataTableRow>
                 <DataTableRow size="lg">
-                  <span className="sub-text">Selected User</span>
+                  <span className="sub-text" style={{fontWeight:"bold"}}>Selected User</span>
                 </DataTableRow>
 
                 <DataTableRow size="lg">
-                  <span className="sub-text">Selected Cabinet</span>
+                  <span className="sub-text" style={{fontWeight:"bold"}}>Selected Cabinet</span>
                 </DataTableRow>
 
                 <DataTableRow className="nk-tb-actions gx-1">
-                  <span className="sub-text" style={{marginRight:"27px"}}>Action</span>
+                  <span className="sub-text" style={{marginRight:"27px",fontWeight:"bold"}}>Action</span>
                 </DataTableRow>
               </DataTableHead>
               {userData.length > 0

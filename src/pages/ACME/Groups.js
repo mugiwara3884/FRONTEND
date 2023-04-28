@@ -47,8 +47,10 @@ import { AuthContext } from "../../context/AuthContext";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Stack, Typography } from "@mui/material";
+import ModalPop from "../../components/Modal";
+import { notification } from "antd";
 const UserListRegularPage = () => {
-  const { contextData, add_group, getUser, updateUser, getGroups, userDropdownU } = useContext(UserContext);
+  const { contextData, add_group, getUser, updateUser, getGroups, userDropdownU,deletegroup } = useContext(UserContext);
   const { setAuthToken } = useContext(AuthContext);
   console.log("contextData ", contextData)
   const [userData, setUserData] = contextData;
@@ -66,6 +68,9 @@ const UserListRegularPage = () => {
     // Your logic to update the status based on the id and checked value
   }
   const [editId, setEditedId] = useState();
+  const [deleteId, setDeleteId] = useState(false);
+  const [blockId, setBlockId] = useState(false);
+
   const [formData, setFormData] = useState({
 
     group_name: "",
@@ -89,7 +94,25 @@ const UserListRegularPage = () => {
 
   const [userDropdowns, setUserDropdowns] = useState([]);
 
+  const [open, setOpen] = React.useState({
+    status:false,
+    data:""
+  });
 
+  const handleClickOpen = (id) => {
+    console.log(id,"----")
+    setOpen({
+      status:true,
+      data:id
+    });
+  };
+
+  const handleClose = () => {
+    setOpen({
+      status:false,
+      data:""
+    });
+  };
 
 
   const timezones = moment.tz.names().map((zone) => ({
@@ -213,6 +236,9 @@ const UserListRegularPage = () => {
     getTotalGroups();
   }, [currentPage]);
 
+  useEffect(()=>{
+    getTotalGroups()
+  },[deleteId])
 
   // function to set the action to be taken in table header
   const onActionText = (e) => {
@@ -377,7 +403,41 @@ const UserListRegularPage = () => {
       }
 
     });
-  };
+    };
+
+    const onDeleteClick =(id)=>{
+      handleClose()
+      notification["warning"]({
+        placement:"bottomRight",
+        description:"",
+        message:"Group Delete"
+      })
+      setDeleteId(true);
+      console.log("id--------",id)
+      console.log("group-----",userData)
+      let deleteId = {id:id}
+      deletegroup(
+        deleteId,
+        (apiRes)=>{
+          console.log("--------------kkkkkkooko",apiRes);
+          const code = 200
+          if(code == 200){
+            console.log("260")
+            resetForm()
+            setModal({edit:false},{add:false});
+            getTotalGroups();
+          }
+          setAuthToken(token);
+        },
+        (apiErr)=>{
+          console.log("add group",apiErr)
+        }
+      )
+    }
+
+
+
+
 
 
   // function to change to suspend property for an item
@@ -453,6 +513,14 @@ const UserListRegularPage = () => {
 
   return (
     <React.Fragment>
+      {/* modal */}
+        <ModalPop
+        open={open.status}
+        handleClose={handleClose}
+        handleOkay={onDeleteClick}
+        title="Group Delete?Are You Sure!"
+        data={open.data}
+      />
       <Head title="User List - Regular"></Head>
       <Content>
       <Stack style={{marginTop:"-19px"}}>
@@ -558,17 +626,17 @@ const UserListRegularPage = () => {
             <DataTableBody>
               <DataTableHead>
                 <DataTableRow>
-                  <span className="sub-text">Group Name</span>
+                  <span className="sub-text" style={{fontWeight:"bold"}}>Group Name</span>
                 </DataTableRow>
                 <DataTableRow size="md">
-                  <span className="sub-text">Group Admin</span>
+                  <span className="sub-text" style={{fontWeight:"bold"}}>Group Admin</span>
                 </DataTableRow>
                 <DataTableRow size="lg">
-                  <span className="sub-text">Selected User</span>
+                  <span className="sub-text" style={{fontWeight:"bold"}}>Selected User</span>
                 </DataTableRow>
 
                 <DataTableRow className="nk-tb-actions gx-1">
-                  <span className="sub-text">Action</span>
+                  <span className="sub-text" style={{marginRight:"20px",fontWeight:"bold"}}>Action</span>
                 </DataTableRow>
               </DataTableHead>
               {userData.length > 0
@@ -587,7 +655,9 @@ const UserListRegularPage = () => {
 
                       <DataTableRow className="nk-tb-col-tools">
                         <ul className="nk-tb-actions gx-1">
-                          <li className="" onClick={() => onEditClick(item.id)}>
+                          <li className="" 
+                          onClick={() => onEditClick(item.id)}
+                          >
                             <TooltipComponent
                               tag="a"
                               containerClassName="btn btn-trigger btn-icon"
@@ -610,14 +680,14 @@ const UserListRegularPage = () => {
                             width={36}
                             handleDiameter={14}
                           /> */}
-                           <li>
+                           <li onClick={()=>handleClickOpen(item.id)} >
                               <TooltipComponent
                                 tag="a"
                                 containerClassName="btn btn-trigger btn-icon"
                                 id={"edit" + item.id}
                                 icon="icon ni ni-trash-alt"
                                 direction="top"
-                                text="Edit"
+                                // text="Delete"
                                 style={{
                                   backgroundColor: "transparent",
                                   boxShadow: "none",

@@ -51,6 +51,8 @@ import { AuthContext } from "../../context/AuthContext";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Grid, ListItem, Stack, Typography } from "@mui/material";
+import ModalPop from "../../components/Modal";
+import { notification } from "antd";
 const Workspace = () => {
   const {
     contextData,
@@ -60,7 +62,8 @@ const Workspace = () => {
     cabinetDropdown,
     getGroupsDropdown,
     getWorkspace,
-    addPermission
+    addPermission,
+    deleteworkspace
   } = useContext(UserContext);
   const { setAuthToken } = useContext(AuthContext);
 //   console.log("contextData ", contextData);
@@ -118,6 +121,25 @@ const Workspace = () => {
   ]);
 
   const [userDropdowns, setUserDropdowns] = useState([]);
+  console.log(userDropdowns)
+  const [open,setOpen]=useState({
+    status:false,
+    data:""
+  })
+
+  const handleClickOpen = (id)=>{
+    setOpen({
+      status:true,
+      data:id
+    })
+  }
+  const handleClose =()=>{
+    setOpen({
+      status:false,
+      data:""
+    })
+  }
+  const [deleteId, setDeleteId] = useState(false);
 
   const getRolesDropdown = () => {
     getGroupsDropdown(
@@ -158,9 +180,9 @@ const Workspace = () => {
         // console.log(data.data, "cabinet_namecabinet_name");
         const code = apiRes.status;
         const message = apiRes.data.message;
-        data.data.foreach((get) => {
-          console.log(get, "assaSASASADSADASDASDASDSADSADSAD/*  */");
-        });
+        // data.data.foreach((get) => {
+        //   console.log(get, "assaSASASADSADASDASDASDSADSADSAD/*  */");
+        // });
         // console.log(" get user apiRes data", data);
         // console.log(" get user apiRes message", message);
         // console.log(" get user apiRes token", token);
@@ -297,6 +319,7 @@ const Workspace = () => {
 
         if (code == 200) {
           setUserData(data);
+          setPermissionData({})
         }
         // setAuthToken(token);
       },
@@ -430,7 +453,7 @@ const Workspace = () => {
     // const { name, email, phone } = submitData;
     if (editId) {
       let submittedData = {
-        workspace_id: editId,
+        workspace_id: String(editId),
         permission_upload: permisssionData.permission_upload,
         permission_view: permisssionData.permission_view,
         permission_createfolder: permisssionData.permission_createfolder,
@@ -439,6 +462,7 @@ const Workspace = () => {
         permission_share: permisssionData.permission_share,
         permission_rename: permisssionData.permission_rename,
       };
+      
       console.log(submittedData)
       // setUserData([submittedData, ...userData]);
       addPermission(
@@ -559,6 +583,37 @@ const Workspace = () => {
       }
     });
   };
+ 
+  
+  const onDeleteClick =(id)=>{
+    handleClose()
+    notification["warning"]({
+      placement:"bottomRight",
+      description:"",
+      message:"Workspace Delete"
+    })
+    setDeleteId(true);
+    console.log("id--------",id)
+    console.log("group-----",userData)
+    let deleteId = {id:id}
+    deleteworkspace(
+      deleteId,
+      (apiRes)=>{
+        console.log("--------------kkkkkkooko",apiRes);
+        const code = 200
+        if(code == 200){
+          console.log("260")
+          resetForm()
+          setModal({edit:false},{add:false});
+          getTotalGroups();
+        }
+        setAuthToken(token);
+      },
+      (apiErr)=>{
+        console.log("add group",apiErr)
+      }
+    )
+  }
 
   const onPermissionClick = (id) => {
     console.log("id........", id);
@@ -654,6 +709,13 @@ const Workspace = () => {
 
   return (
     <React.Fragment>
+      <ModalPop
+      open={open.status}
+      handleClose={handleClose}
+      handleOkay={onDeleteClick}
+      title={"Cabinet Delete Are You Sure!"}
+      data={open.data}
+      />
       <Head title="User List - Regular"></Head>
       <Content>
       <Stack style={{marginTop:"-19px"}}>
@@ -776,16 +838,16 @@ const Workspace = () => {
             <DataTableBody>
               <DataTableHead>
                 <DataTableRow>
-                  <span className="sub-text">Workspace Name</span>
+                  <span className="sub-text" style={{fontWeight:"bold"}}>Workspace Name</span>
                 </DataTableRow>
                 {/* <DataTableRow size="md">
                   <span className="sub-text">Path</span>
                 </DataTableRow> */}
                 <DataTableRow size="lg">
-                  <span className="sub-text">Selected Groups</span>
+                  <span className="sub-text" style={{fontWeight:"bold"}}>Selected Groups</span>
                 </DataTableRow>
                 <DataTableRow size="lg">
-                  <span className="sub-text">Selected User</span>
+                  <span className="sub-text" style={{fontWeight:"bold"}}>Selected User</span>
                 </DataTableRow>
 
                 {/* <DataTableRow size="lg">
@@ -793,7 +855,7 @@ const Workspace = () => {
                                 </DataTableRow> */}
 
                 <DataTableRow className="nk-tb-actions gx-1">
-                  <span className="sub-text" style={{marginRight:"50px"}}>Action</span>
+                  <span className="sub-text" style={{marginRight:"50px",fontWeight:"bold"}}>Action</span>
                 </DataTableRow>
               </DataTableHead>
               {userData.length > 0
@@ -873,7 +935,22 @@ const Workspace = () => {
                                   cursor:"pointer"
                                 }}
                               />
-                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              &nbsp;&nbsp;
+                            </li>
+                            <li onClick={()=>handleClickOpen(item.id)}>
+                              <TooltipComponent
+                                tag="a"
+                                containerClassName="btn btn-trigger btn-icon"
+                                id={"edit" + item.id}
+                                icon="icon ni ni-trash-alt"
+                                direction="top"
+                                text="Delete"
+                                style={{
+                                  backgroundColor: "transparent",
+                                  boxShadow: "none",
+                                  color: "inherit",
+                                }}
+                              />
                             </li>
                           </ul>
                         </DataTableRow>
@@ -1196,7 +1273,7 @@ const Workspace = () => {
                           onChange={(e) =>
                             setPermissionData({
                               ...permisssionData,
-                              permission_upload: e.target.checked,
+                              permission_upload: String(e.target.checked),
                             })
                           }
                           ref={register({ required: "This field is required" })}
@@ -1220,7 +1297,7 @@ const Workspace = () => {
                           onChange={(e) =>
                             setPermissionData({
                               ...permisssionData,
-                              permission_view: e.target.checked,
+                              permission_view: String(e.target.checked),
                             })
                           }
                           ref={register({ required: "This field is required" })}
@@ -1244,7 +1321,7 @@ const Workspace = () => {
                           onChange={(e) =>
                             setPermissionData({
                               ...permisssionData,
-                              permission_createfolder: e.target.checked,
+                              permission_createfolder: String(e.target.checked),
                             })
                           }
                           ref={register({ required: "This field is required" })}
@@ -1268,7 +1345,7 @@ const Workspace = () => {
                           onChange={(e) =>
                             setPermissionData({
                               ...permisssionData,
-                              permission_delete: e.target.checked,
+                              permission_delete: String(e.target.checked),
                             })
                           }
                           ref={register({ required: "This field is required" })}
@@ -1292,7 +1369,7 @@ const Workspace = () => {
                           onChange={(e) =>
                             setPermissionData({
                               ...permisssionData,
-                              permission_download: e.target.checked,
+                              permission_download: String(e.target.checked)
                             })
                           }
                           ref={register({ required: "This field is required" })}
@@ -1316,7 +1393,7 @@ const Workspace = () => {
                           onChange={(e) =>
                             setPermissionData({
                               ...permisssionData,
-                              permission_share: e.target.checked,
+                              permission_share: String(e.target.checked),
                             })
                           }
                           ref={register({ required: "This field is required" })}
@@ -1340,7 +1417,7 @@ const Workspace = () => {
                           onChange={(e) =>
                             setPermissionData({
                               ...permisssionData,
-                              permission_rename: e.target.checked,
+                              permission_rename: String(e.target.checked),
                             })
                           }
                           ref={register({ required: "This field is required" })}

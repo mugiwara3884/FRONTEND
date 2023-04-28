@@ -17,9 +17,9 @@
         "cabinetdropdown":"cabinetdropdown",
         "addFolder":"folders",
         "wauth":"wauth",
-        
-
-
+        "deletegroup":"deletegroup",
+        "deletecabinet":"deletecabinet",
+        "deleteworkspace":"deleteworkspace",
         
         "uploadFile": "/file/upload",
         "uploadByCustomer": "/file/uploadByCustomer",

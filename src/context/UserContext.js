@@ -120,6 +120,37 @@ export const UserContextProvider = (props) => {
       })
   };
 
+  async function deletegroup(data, handleApiRes, handleApiError) {
+    await AxiosPost("deletegroup", data,
+      (apiRes) => {
+        // console.log(apiRes);
+        handleApiRes(apiRes)
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+
+
+  async function deletecabinet(data, handleApiRes, handleApiError) {
+    await AxiosPost("deletecabinet", data,
+      (apiRes) => {
+        // console.log(apiRes);
+        handleApiRes(apiRes)
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+  
+  async function deleteworkspace(data, handleApiRes, handleApiError) {
+    await AxiosPost("deleteworkspace", data,
+      (apiRes) => {
+        // console.log(apiRes);
+        handleApiRes(apiRes)
+      }, (apiError) => {
+        handleApiError(apiError)
+      })
+  };
+
   async function blockUser(data, handleApiRes, handleApiError) {
     await AxiosPost("blockuser", data,
       (apiRes) => {
@@ -199,6 +230,9 @@ export const UserContextProvider = (props) => {
     getCabinet:getCabinet,
     addCabinet:addCabinet,
     deleteUser:deleteUser,
+    deletegroup:deletegroup,
+    deletecabinet:deletecabinet,
+    deleteworkspace:deleteworkspace,
     blockUser:blockUser,
     getWorkspace:getWorkspace,
     addWorkspace:addWorkspace,
